@@ -80,11 +80,61 @@ DataModel.prototype.initDataStructure = function(projects) {
  * @param project object.
  * @param function to be called with the result of the retrieval (most likely a display function).
  */
-DataModel.prototype.retrieveExperimentDataForProject = function(project, callback) {
+DataModel.prototype.retrieveExperimentDataForProject = function(project) {
 
-    project['experiments'] = 1;
+    // Make sure there are no experiments yet
+    project['experiments'] = {};
 
-    if (callback != null) {
-        callback(project);
-    }
+    // Clean the UI
+    DATAVIEWER.cleanExperiments();
+
+    // We now retrieve the experiments of all supported types in parallel.
+
+    // Retrieve the LSR_FORTESSA_EXPERIMENT information for current project
+    this.openbisServer.listExperiments([project["project"]],
+        "LSR_FORTESSA_EXPERIMENT", function(response) {
+
+        if (response.error) {
+            DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
+                response.error.message + "\"", "error");
+
+        } else {
+
+            project["experiments"]["LSR_FORTESSA"] = response.result;
+            DATAVIEWER.displayExperiments(project, "LSR_FORTESSA");
+
+        }
+    });
+
+    // Retrieve the FACS_ARIA_EXPERIMENT information for current project
+    this.openbisServer.listExperiments([project["project"]],
+        "FACS_ARIA_EXPERIMENT", function(response) {
+
+            if (response.error) {
+                DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
+                    response.error.message + "\"", "error");
+
+            } else {
+
+                project["experiments"]["FACS_ARIA"] = response.result;
+                DATAVIEWER.displayExperiments(project, "FACS_ARIA");
+
+            }
+        });
+
+    // Retrieve the MICROSCOPY_EXPERIMENT information for current project
+    this.openbisServer.listExperiments([project["project"]],
+        "MICROSCOPY_EXPERIMENT", function(response) {
+
+            if (response.error) {
+                DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
+                    response.error.message + "\"", "error");
+
+            } else {
+
+                project["experiments"]["MICROSCOPY"] = response.result;
+                DATAVIEWER.displayExperiments(project, "MICROSCOPY");
+
+            }
+        });
 };

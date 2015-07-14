@@ -119,26 +119,80 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
     }
 
     // If the experiment data was already available, we display it.
-    this.displayExperiments(project);
-
+    this.cleanExperiments();
+    this.displayExperiments(project, "LSR_FORTESSA");
+    this.displayExperiments(project, "FACS_ARIA");
+    this.displayExperiments(project, "MICROSCOPY");
 };
 
 /**
  * Display the data.
  * @param projects array of projects.
  */
-DataViewer.prototype.displayExperiments = function(project) {
+DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
-    // Display the status
-    $("#experiments").empty();
+    // Check!
+    if (experimentType != "LSR_FORTESSA" && experimentType != "FACS_ARIA" && experimentType != "MICROSCOPY") {
 
+        DATAVIEWER.displayStatus("Unknown experiment type! This is a big! Please report!", "error");
+        return;
+
+    }
+
+    // Get and store some divs
+    var experiments_div = $("#experiments")
+
+    // Clear the experiments div
+    experiments_div.empty();
+
+    // If the project has not be scanned yet, we just return
     if (! project.hasOwnProperty("experiments")) {
         return;
     }
 
+    // Retrieve the experiments
     var experiments = project["experiments"];
 
-    var p = $("<div>").addClass("experiment").text(experiments);
-    $("#experiments").append(p);
+    // Get the requested experiments
+    var requested_exp_div = $("#" + experimentType.toLowerCase());
+    var requested_experiments = experiments[experimentType];
+    var requested_exp_property_name = experimentType + "_EXPERIMENT_NAME";
+    var requested_exp_descr_property_name =  experimentType + "_EXPERIMENT_DESCRIPTION";
+
+    // Add a title
+    var nExp =  requested_experiments.length;
+    if (nExp > 0) {
+        var p = $("<div>").addClass("experiment_type").text(experimentType);
+        requested_exp_div.append(p);
+
+        // Display experiments
+        for (var i = 0; i < requested_experiments.length; i++) {
+
+            var e = requested_experiments[i]["properties"][requested_exp_property_name];
+            var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
+            if (d == "") {
+                d = "No description provided.";
+            }
+
+            // Display
+            var p = $("<div>").addClass("experiment").text(e);
+            requested_exp_div.append(p);
+            var q = $("<div>").addClass("experiment_description").text(d);
+            requested_exp_div.append(q);
+
+        }
+    }
+
+};
+
+/**
+ * Clean the experiment lists.
+  */
+DataViewer.prototype.cleanExperiments = function() {
+
+    $("#experiments").empty();
+    $("#lsr_fortessa").empty();
+    $("#facs_aria").empty();
+    $("#microscopy").empty();
 
 };

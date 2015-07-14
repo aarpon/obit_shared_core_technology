@@ -17,12 +17,10 @@ body {
 }
 
 #experiments {
-    padding-left: 20px;
     text-align: left;
 }
 
 .space {
-    padding-top: 10px;
     padding-left: 5px;
     font-size: 1.5em;
     font-weight: bold;
@@ -32,4 +30,22 @@ body {
     padding-left: 15px;
     font-size: 1.2em;
     font-weight: normal;
+}
+
+.experiment_type {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.experiment {
+    padding-left: 5px;
+    font-size: 1.2em;
+    font-weight: normal;
+}
+
+.experiment_description {
+    font-size: 0.8em;
+    padding-left: 10px;
+    font-weight: normal;
+    font-style: oblique;
 }
