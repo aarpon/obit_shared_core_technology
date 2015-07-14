@@ -39,17 +39,18 @@ function DataModel() {
         } else {
 
             // Build the data structure
-            DATAMODEL.buildDataStructure(response.result);
+            DATAMODEL.initDataStructure(response.result);
 
         }
     })
 }
 
 /**
- * Build the data structure.
+ * Initialize the data structure with space and project information and
+ * display it using the DataViewer.
  * @param projects array of projects.
  */
-DataModel.prototype.buildDataStructure = function(projects) {
+DataModel.prototype.initDataStructure = function(projects) {
 
     // Go over all projects and rearrange them per space
     for (var i = 0; i < projects.length; i++) {
@@ -62,11 +63,28 @@ DataModel.prototype.buildDataStructure = function(projects) {
             DATAMODEL.data[spaceCode] = new Array();
         }
 
-        // Add the project
-        DATAMODEL.data[spaceCode].push(projects[i]);
+        // Add the project object. We will populate it later on
+        // demand with experiment information.
+        var project = {};
+        project['project'] = projects[i];
+        DATAMODEL.data[spaceCode].push(project);
     }
 
     // Now display the data
     DATAVIEWER.displayProjects(DATAMODEL.data);
 
+};
+
+/**
+ * Retrieve experiment info for given project.
+ * @param project object.
+ * @param function to be called with the result of the retrieval (most likely a display function).
+ */
+DataModel.prototype.retrieveExperimentDataForProject = function(project, callback) {
+
+    project['experiments'] = 1;
+
+    if (callback != null) {
+        callback(project);
+    }
 };

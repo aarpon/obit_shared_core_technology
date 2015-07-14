@@ -72,7 +72,9 @@ DataViewer.prototype.displayProjects = function(data) {
 
             var project = data[spaces[i]][j];
 
-            var p = $("<div>").addClass("project").text(project.code).css('cursor', 'pointer').click(
+            var code = project["project"].code;
+
+            var p = $("<div>").addClass("project").text(code).css('cursor', 'pointer').click(
                 DATAVIEWER.retrieveProjectInfo(project));
 
             $("#projects").append(p);
@@ -90,8 +92,34 @@ DataViewer.prototype.displayProjects = function(data) {
 DataViewer.prototype.retrieveProjectInfo = function(project) {
 
     return function() {
-        DATAVIEWER.displayExperiments(project.code);
+        DATAVIEWER.prepareDisplayExperiments(project);
     }
+
+};
+
+/**
+ * Checks whether the experiment data is ready to be displayed.
+ *
+ * If it is, displayExperiments() is called; otherwise, DataModel::retrieveExperimentDataForProject()
+ * is called first.
+ *
+ * @param projects array of projects.
+ */
+DataViewer.prototype.prepareDisplayExperiments = function(project) {
+
+    // Check whether the experiment data for current project was already
+    // retrieved
+    if (! (project.hasOwnProperty("experiments") && project["experiments"] != {})) {
+
+        // Retrieve experiments info and pass again this function for display
+        DATAMODEL.retrieveExperimentDataForProject(project, DATAVIEWER.displayExperiments);
+
+        // Return here if we launched the retrieval of experiment data
+        return;
+    }
+
+    // If the experiment data was already available, we display it.
+    this.displayExperiments(project);
 
 };
 
@@ -99,12 +127,18 @@ DataViewer.prototype.retrieveProjectInfo = function(project) {
  * Display the data.
  * @param projects array of projects.
  */
-DataViewer.prototype.displayExperiments = function(experiments) {
+DataViewer.prototype.displayExperiments = function(project) {
 
     // Display the status
     $("#experiments").empty();
 
-    var p = $("<div>").addClass("experiment").text(experiments).css('cursor', 'pointer');
+    if (! project.hasOwnProperty("experiments")) {
+        return;
+    }
+
+    var experiments = project["experiments"];
+
+    var p = $("<div>").addClass("experiment").text(experiments);
     $("#experiments").append(p);
 
 };
