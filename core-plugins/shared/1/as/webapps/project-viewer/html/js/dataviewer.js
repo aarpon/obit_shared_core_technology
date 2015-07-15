@@ -22,9 +22,17 @@ function DataViewer() {
  */
 DataViewer.prototype.displayStatus = function(status, level) {
 
-    // Display the status
-    $("#status").empty();
+    // Get the the status div
+    var status_div = $("#status");
 
+    // Make sure the status div is visible
+    status_div.show();
+
+    // Clear the status
+    status_div.empty();
+
+    // Map the level to the bootstrap class
+    var cls = "info";
     switch (level) {
         case "success":
             cls = "success";
@@ -43,41 +51,62 @@ DataViewer.prototype.displayStatus = function(status, level) {
             break;
     }
 
-    status = "<div class=\"alert alert-" + cls + " alert-dismissable\">" +
-        status + "</div>";
-    $("#status").html(status);
+    // Show
+    status = "<div class=\"alert alert-" + cls + " alert-dismissable\">" + status + "</div>";
+    status_div.html(status);
 
 };
 
 /**
  * Display the data.
- * @param projects array of projects.
+ * @param data Array of projects (with spaces as keys).
  */
 DataViewer.prototype.displayProjects = function(data) {
 
+    // Get the projects div
+    var projects_div = $("#projects");
+
     // Display the status
-    $("#projects").empty();
+    projects_div.empty();
 
     // Get the spaces
     var spaces = Object.keys(data);
 
     for (var i = 0; i < spaces.length; i++) {
 
-        // Display the space
-        var s = $("<div>").addClass("space").text(spaces[i]);
-        $("#projects").append(s);
+        // Create a panel for the space
+        var space_panel = $("<div>").attr("id", "space" + i).addClass("panel").addClass("panel-info");
+        projects_div.append(space_panel);
+
+        // Retrieve and store the reference
+        var spaceId = $("#space" + i);
+
+        // Add the heading
+        var space_panel_heading = $("<div>").attr("id", "space_heading" + i).addClass("panel-heading");
+        spaceId.append(space_panel_heading);
+
+        // Add the title
+        var space_panel_title = $("<h3>").addClass("panel-title").text(spaces[i]);
+        $("#space_heading" + i).append(space_panel_title);
+
+        // Add the body
+        var space_panel_body = $("<div>").attr("id", "space_body" + i).addClass("panel-body");
+        spaceId.append(space_panel_body);
+
+        // Retrieve and store the reference
+        var spaceBodyId = $("#space_body" + i);
 
         // Display all its projects
         for (var j = 0; j < data[spaces[i]].length; j++) {
 
+            // Build the link
             var project = data[spaces[i]][j];
-
             var code = project["project"].code;
-
-            var p = $("<div>").addClass("project").text(code).css('cursor', 'pointer').click(
+            var p = $("<p>").text(code).css('cursor', 'pointer').click(
                 DATAVIEWER.retrieveProjectInfo(project));
 
-            $("#projects").append(p);
+            // Add it
+            spaceBodyId.append(p);
 
         }
 
@@ -95,6 +124,35 @@ DataViewer.prototype.retrieveProjectInfo = function(project) {
         DATAVIEWER.prepareDisplayExperiments(project);
     }
 
+};
+
+/**
+ * Return a description of the acquisition hardware to be associated to the experiments.
+ * @param experiment_type Type of experiment, one of LST_FORTESSA, FACS_ARIA, MICROSCOPY
+ * @returns string Hardware-dependent experiment description.
+ */
+DataViewer.prototype.getHardwareDependentExperimentDescription = function(experiment_type) {
+
+    var description = "";
+
+    if (experiment_type == "LSR_FORTESSA") {
+
+        description = "Flow experiments (BD LSR Fortessa)";
+
+    } else if (experiment_type == "FACS_ARIA") {
+
+        description = "Flow experiments (BD FACS Aria)";
+
+    } else if (experiment_type == "MICROSCOPY") {
+
+        description = "Microscopy experiments (various instruments)";
+
+    } else {
+        DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
+        description = ""
+    }
+
+    return description;
 };
 
 /**
@@ -138,7 +196,7 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
  * If it is, displayExperiments() is called; otherwise, DataModel::retrieveExperimentDataForProject()
  * is called first.
  *
- * @param projects array of projects.
+ * @param project Project object.
  */
 DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
@@ -162,7 +220,8 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
 /**
  * Display the data.
- * @param projects array of projects.
+ * @param project Project object.
+ * @param experimentType string One of "LSR_FORTESSA", "FACS_ARIA", "MICROSCOPY".
  */
 DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
@@ -173,12 +232,6 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         return;
 
     }
-
-    // Get and store some divs
-    var experiments_div = $("#experiments")
-
-    // Clear the experiments div
-    experiments_div.empty();
 
     // If the project has not be scanned yet, we just return
     if (! project.hasOwnProperty("experiments")) {
@@ -194,11 +247,33 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     var requested_exp_property_name = experimentType + "_EXPERIMENT_NAME";
     var requested_exp_descr_property_name =  experimentType + "_EXPERIMENT_DESCRIPTION";
 
+    var experimentDescription = DATAVIEWER.getHardwareDependentExperimentDescription(experimentType);
+
     // Add a title
     var nExp =  requested_experiments.length;
     if (nExp > 0) {
-        var p = $("<div>").addClass("experiment_type").text(experimentType);
-        requested_exp_div.append(p);
+
+        // Create a panel for the experiment category
+        var category_panel = $("<div>").attr("id", "category_" + experimentType).addClass("panel").addClass("panel-success");
+        requested_exp_div.append(category_panel);
+
+        // Retrieve and store reference to div
+        var category_div = $("#category_" + experimentType);
+
+        // Add the heading
+        var category_panel_heading = $("<div>").attr("id", "category_heading_" + experimentType).addClass("panel-heading");
+        category_div.append(category_panel_heading);
+
+        // Add the title
+        var category_panel_title = $("<h3>").addClass("panel-title").text(experimentDescription);
+        $("#category_heading_" + experimentType).append(category_panel_title);
+
+        // Add the body
+        var category_panel_body = $("<div>").attr("id", "category_body_" + experimentType).addClass("panel-body");
+        category_div.append(category_panel_body);
+
+        // Retrieve and store the reference
+        var categoryBodyId = $("#category_body_" + experimentType);
 
         // Display experiments
         for (var i = 0; i < requested_experiments.length; i++) {
@@ -206,17 +281,20 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             var e = requested_experiments[i]["properties"][requested_exp_property_name];
             var c = requested_experiments[i].code;
             var p = requested_experiments[i].permId;
+
+            // Add the experiment name with link to the viewer web app
             var link = $("<a>").addClass("experiment").text(e).attr("href", "#").attr("title", c).click(
                 DATAVIEWER.linkToExperiment(p, experimentType));
+            categoryBodyId.append(link);
+
             var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
             if (d === undefined || d === "") {
                 d = "No description provided.";
             }
 
-            // Display
-            requested_exp_div.append(link);
+            // Display the description
             var q = $("<div>").addClass("experiment_description").text(d);
-            requested_exp_div.append(q);
+            categoryBodyId.append(q);
 
         }
     }
@@ -228,7 +306,6 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
   */
 DataViewer.prototype.cleanExperiments = function() {
 
-    $("#experiments").empty();
     $("#lsr_fortessa").empty();
     $("#facs_aria").empty();
     $("#microscopy").empty();
