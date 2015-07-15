@@ -98,6 +98,41 @@ DataViewer.prototype.retrieveProjectInfo = function(project) {
 };
 
 /**
+ * Link to the requested experiment.
+ * @param permId Permanent ID of the experiment.
+ * @param experiment_type Type of experiment, one of LST_FORTESSA, FACS_ARIA, MICROSCOPY
+ * @returns {Function} Callback
+ */
+DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
+
+    var section = "";
+
+    if (experiment_type == "LSR_FORTESSA") {
+
+        section = "webapp-section_lsrfortessa-viewer";
+
+    } else if (experiment_type == "FACS_ARIA") {
+
+        section = "webapp-section_facsaria-viewer";
+
+    } else if (experiment_type == "MICROSCOPY") {
+
+        section = "webapp-section_microscopy-experiment-viewer";
+
+    } else {
+        DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
+        return function() {return false;};
+    }
+
+    return function() {
+        window.top.location.hash = "#entity=EXPERIMENT&permId=" + permId +
+            "&ui-subtab=" + section + "&ui-timestamp=" + (new Date().getTime());
+        return false;
+    }
+
+};
+
+/**
  * Checks whether the experiment data is ready to be displayed.
  *
  * If it is, displayExperiments() is called; otherwise, DataModel::retrieveExperimentDataForProject()
@@ -169,14 +204,17 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         for (var i = 0; i < requested_experiments.length; i++) {
 
             var e = requested_experiments[i]["properties"][requested_exp_property_name];
+            var c = requested_experiments[i].code;
+            var p = requested_experiments[i].permId;
+            var link = $("<a>").addClass("experiment").text(e).attr("href", "#").attr("title", c).click(
+                DATAVIEWER.linkToExperiment(p, experimentType));
             var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
-            if (d == "") {
+            if (d === undefined || d === "") {
                 d = "No description provided.";
             }
 
             // Display
-            var p = $("<div>").addClass("experiment").text(e);
-            requested_exp_div.append(p);
+            requested_exp_div.append(link);
             var q = $("<div>").addClass("experiment_description").text(d);
             requested_exp_div.append(q);
 
