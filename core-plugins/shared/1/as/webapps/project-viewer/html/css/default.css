@@ -16,21 +16,16 @@ body {
     margin-left: 5px;
 }
 
-#experiments {
+#lsr_fortessa {
     margin-bottom: 5px;
-    text-align: left;
 }
 
-.space {
+#facs_aria {
+    margin-bottom: 5px;
 }
 
-.project {
-}
-
-.experiment_type {
-}
-
-.experiment {
+#microscopy {
+    margin-bottom: 5px;
 }
 
 .experiment_description {
