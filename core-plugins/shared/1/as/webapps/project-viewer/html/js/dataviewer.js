@@ -72,11 +72,11 @@ DataViewer.prototype.displayProjects = function(data) {
     // Create the panel group
     var panel_group = $("<div>")
         .addClass("panel-group")
-        .attr("id", "accordion");
+        .attr("id", "space_accordion");
     projects_div.append(panel_group);
 
     // Get and retrieve the reference
-    var panelGroupId = $("#accordion");
+    var panelGroupId = $("#space_accordion");
 
     // Get the spaces
     var spaces = Object.keys(data);
@@ -93,13 +93,13 @@ DataViewer.prototype.displayProjects = function(data) {
         panelGroupId.append(space_panel);
 
         // Retrieve and store the reference
-        var spaceId = $("#space" + i);
+        var spacePanelId = $("#space" + i);
 
         // Add the heading
         var space_panel_heading = $("<div>")
             .attr("id", "space_heading" + i)
             .addClass("panel-heading");
-        spaceId.append(space_panel_heading);
+        spacePanelId.append(space_panel_heading);
 
         // Retrieve and store the reference
         var spaceHeadingId = $("#space_heading" + i);
@@ -115,7 +115,7 @@ DataViewer.prototype.displayProjects = function(data) {
 
         var space_panel_title_ref = $("<a>")
             .attr("data-toggle", "collapse")
-            .attr("data-parent", "#accordion")
+            .attr("data-parent", "#space_accordion")
             .attr("href", "#space_panel_collapse_" + i)
             .text(spaces[i]);
         spacePanelTitleId.append(space_panel_title_ref);
@@ -126,13 +126,15 @@ DataViewer.prototype.displayProjects = function(data) {
             .addClass("panel-collapse")
             .addClass("collapse")
             .addClass("in");
-        spaceId.append(space_panel_collapse);
+        spacePanelId.append(space_panel_collapse);
 
         // Retrieve and store the reference
         var spacePanelCollapseId = $("#space_panel_collapse_" + i);
 
         // Add the body
-        var space_panel_body = $("<div>").attr("id", "space_body" + i).addClass("panel-body");
+        var space_panel_body = $("<div>")
+            .attr("id", "space_body" + i)
+            .addClass("panel-body");
         spacePanelCollapseId.append(space_panel_body);
 
         // Retrieve and store the reference
@@ -270,7 +272,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     // Check!
     if (experimentType != "LSR_FORTESSA" && experimentType != "FACS_ARIA" && experimentType != "MICROSCOPY") {
 
-        DATAVIEWER.displayStatus("Unknown experiment type! This is a big! Please report!", "error");
+        DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
         return;
 
     }
@@ -280,11 +282,14 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         return;
     }
 
+    // Use the lower case experiment type as a key
+    var experimentTypeKey = experimentType.toLowerCase();
+
     // Retrieve the experiments
     var experiments = project["experiments"];
 
     // Get the requested experiments
-    var requested_exp_div = $("#" + experimentType.toLowerCase());
+    var requested_exp_div = $("#" + experimentTypeKey);
     var requested_experiments = experiments[experimentType];
     var requested_exp_property_name = experimentType + "_EXPERIMENT_NAME";
     var requested_exp_descr_property_name =  experimentType + "_EXPERIMENT_DESCRIPTION";
@@ -295,27 +300,71 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     var nExp =  requested_experiments.length;
     if (nExp > 0) {
 
-        // Create a panel for the experiment category
-        var category_panel = $("<div>").attr("id", "category_" + experimentType).addClass("panel").addClass("panel-success");
-        requested_exp_div.append(category_panel);
+        // Create the panel group
+        var panel_group = $("<div>")
+            .addClass("panel-group")
+            .attr("id", experimentTypeKey + "_accordion");
+        requested_exp_div.append(panel_group);
 
-        // Retrieve and store reference to div
-        var category_div = $("#category_" + experimentType);
+        // Get and retrieve the reference
+        var panelGroupId = $("#" + experimentTypeKey + "_accordion");
 
-        // Add the heading
-        var category_panel_heading = $("<div>").attr("id", "category_heading_" + experimentType).addClass("panel-heading");
-        category_div.append(category_panel_heading);
+        // Create a panel for the experiments
+        var experiments_type_panel = $("<div>")
+            .attr("id", experimentTypeKey + "_panel")
+            .addClass("panel")
+            .addClass("panel-success");
 
-        // Add the title
-        var category_panel_title = $("<h3>").addClass("panel-title").text(experimentDescription);
-        $("#category_heading_" + experimentType).append(category_panel_title);
-
-        // Add the body
-        var category_panel_body = $("<div>").attr("id", "category_body_" + experimentType).addClass("panel-body");
-        category_div.append(category_panel_body);
+        // Add it to the group
+        panelGroupId.append(experiments_type_panel);
 
         // Retrieve and store the reference
-        var categoryBodyId = $("#category_body_" + experimentType);
+        var experimentTypeId = $("#" + experimentTypeKey + "_panel");
+
+        // Add the heading
+        var experiments_type_panel_heading = $("<div>")
+            .attr("id", experimentTypeKey + "_heading")
+            .addClass("panel-heading");
+        experimentTypeId.append(experiments_type_panel_heading);
+
+        // Retrieve and store the reference
+        var experimentTypeHeadingId = $("#" + experimentTypeKey + "_heading");
+
+        // Add the title
+        var experiments_type_panel_title = $("<h4>")
+            .attr("id", experimentTypeKey + "_heading_title")
+            .addClass("panel-title");
+        experimentTypeHeadingId.append(experiments_type_panel_title);
+
+        // Get and store reference
+        var experimentTypePanelTitleId = $("#" + experimentTypeKey + "_heading_title");
+
+        var experiments_type_panel_title_ref = $("<a>")
+            .attr("data-toggle", "collapse")
+            .attr("data-parent", "#" + experimentTypeKey + "_accordion")
+            .attr("href", "#" + experimentTypeKey + "_panel_collapse")
+            .text(experimentDescription);
+        experimentTypePanelTitleId.append(experiments_type_panel_title_ref);
+
+        // Add the panel collapse div
+        var experiments_type_panel_collapse = $("<div>")
+            .attr("id", experimentTypeKey + "_panel_collapse")
+            .addClass("panel-collapse")
+            .addClass("collapse")
+            .addClass("in");
+        experimentTypeId.append(experiments_type_panel_collapse);
+
+        // Retrieve and store the reference
+        var experimentTypePanelCollapseId = $("#" + experimentTypeKey + "_panel_collapse");
+
+        // Add the body
+        var experiments_type_panel_body = $("<div>")
+            .attr("id", experimentTypeKey + "_panel_body")
+            .addClass("panel-body");
+        experimentTypePanelCollapseId.append(experiments_type_panel_body);
+
+        // Retrieve and store the reference
+        var experimentTypePanelBodyId = $("#" + experimentTypeKey + "_panel_body");
 
         // Display experiments
         for (var i = 0; i < requested_experiments.length; i++) {
@@ -327,7 +376,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             // Add the experiment name with link to the viewer web app
             var link = $("<a>").addClass("experiment").text(e).attr("href", "#").attr("title", c).click(
                 DATAVIEWER.linkToExperiment(p, experimentType));
-            categoryBodyId.append(link);
+            experimentTypePanelBodyId.append(link);
 
             var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
             if (d === undefined || d === "") {
@@ -336,7 +385,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             // Display the description
             var q = $("<div>").addClass("experiment_description").text(d);
-            categoryBodyId.append(q);
+            experimentTypePanelBodyId.append(q);
 
         }
     }
