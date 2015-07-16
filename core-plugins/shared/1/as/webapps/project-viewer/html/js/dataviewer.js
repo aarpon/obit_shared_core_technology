@@ -69,29 +69,71 @@ DataViewer.prototype.displayProjects = function(data) {
     // Display the status
     projects_div.empty();
 
+    // Create the panel group
+    var panel_group = $("<div>")
+        .addClass("panel-group")
+        .attr("id", "accordion");
+    projects_div.append(panel_group);
+
+    // Get and retrieve the reference
+    var panelGroupId = $("#accordion");
+
     // Get the spaces
     var spaces = Object.keys(data);
 
     for (var i = 0; i < spaces.length; i++) {
 
         // Create a panel for the space
-        var space_panel = $("<div>").attr("id", "space" + i).addClass("panel").addClass("panel-info");
-        projects_div.append(space_panel);
+        var space_panel = $("<div>")
+            .attr("id", "space" + i)
+            .addClass("panel")
+            .addClass("panel-info");
+
+        // Add it to the group
+        panelGroupId.append(space_panel);
 
         // Retrieve and store the reference
         var spaceId = $("#space" + i);
 
         // Add the heading
-        var space_panel_heading = $("<div>").attr("id", "space_heading" + i).addClass("panel-heading");
+        var space_panel_heading = $("<div>")
+            .attr("id", "space_heading" + i)
+            .addClass("panel-heading");
         spaceId.append(space_panel_heading);
 
+        // Retrieve and store the reference
+        var spaceHeadingId = $("#space_heading" + i);
+
         // Add the title
-        var space_panel_title = $("<h3>").addClass("panel-title").text(spaces[i]);
-        $("#space_heading" + i).append(space_panel_title);
+        var space_panel_title = $("<h4>")
+            .attr("id", "space_heading_title_" + i)
+            .addClass("panel-title");
+        spaceHeadingId.append(space_panel_title);
+
+        // Get and store reference
+        var spacePanelTitleId = $("#space_heading_title_" + i);
+
+        var space_panel_title_ref = $("<a>")
+            .attr("data-toggle", "collapse")
+            .attr("data-parent", "#accordion")
+            .attr("href", "#space_panel_collapse_" + i)
+            .text(spaces[i]);
+        spacePanelTitleId.append(space_panel_title_ref);
+
+        // Add the panel collapse div
+        var space_panel_collapse = $("<div>")
+            .attr("id", "space_panel_collapse_" + i)
+            .addClass("panel-collapse")
+            .addClass("collapse")
+            .addClass("in");
+        spaceId.append(space_panel_collapse);
+
+        // Retrieve and store the reference
+        var spacePanelCollapseId = $("#space_panel_collapse_" + i);
 
         // Add the body
         var space_panel_body = $("<div>").attr("id", "space_body" + i).addClass("panel-body");
-        spaceId.append(space_panel_body);
+        spacePanelCollapseId.append(space_panel_body);
 
         // Retrieve and store the reference
         var spaceBodyId = $("#space_body" + i);
