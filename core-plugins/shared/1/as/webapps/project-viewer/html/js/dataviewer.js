@@ -72,11 +72,11 @@ DataViewer.prototype.displayProjects = function(data) {
     // Create the panel group
     var panel_group = $("<div>")
         .addClass("panel-group")
-        .attr("id", "space_accordion");
+        .attr("id", "space_group");
     projects_div.append(panel_group);
 
     // Get and retrieve the reference
-    var panelGroupId = $("#space_accordion");
+    var panelGroupId = $("#space_group");
 
     // Get the spaces
     var spaces = Object.keys(data);
@@ -115,7 +115,7 @@ DataViewer.prototype.displayProjects = function(data) {
 
         var space_panel_title_ref = $("<a>")
             .attr("data-toggle", "collapse")
-            .attr("data-parent", "#space_accordion")
+            .attr("data-parent", "#space_panel_collapse_" + i)
             .attr("href", "#space_panel_collapse_" + i)
             .text(spaces[i]);
         spacePanelTitleId.append(space_panel_title_ref);
@@ -303,11 +303,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         // Create the panel group
         var panel_group = $("<div>")
             .addClass("panel-group")
-            .attr("id", experimentTypeKey + "_accordion");
+            .attr("id", experimentTypeKey + "_group");
         requested_exp_div.append(panel_group);
 
         // Get and retrieve the reference
-        var panelGroupId = $("#" + experimentTypeKey + "_accordion");
+        var panelGroupId = $("#" + experimentTypeKey + "_group");
 
         // Create a panel for the experiments
         var experiments_type_panel = $("<div>")
@@ -341,7 +341,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
         var experiments_type_panel_title_ref = $("<a>")
             .attr("data-toggle", "collapse")
-            .attr("data-parent", "#" + experimentTypeKey + "_accordion")
+            .attr("data-parent", "#" + experimentTypeKey + "_panel_collapse")
             .attr("href", "#" + experimentTypeKey + "_panel_collapse")
             .text(experimentDescription);
         experimentTypePanelTitleId.append(experiments_type_panel_title_ref);
