@@ -28,9 +28,17 @@ body {
     margin-bottom: 5px;
 }
 
+.experiment_tags {
+    font-size: 0.8em;
+    padding-left: 10px;
+    padding-left: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
 .experiment_description {
     font-size: 0.8em;
     padding-left: 10px;
     font-weight: normal;
-    font-style: oblique;
+    margin-bottom: 9px;
 }

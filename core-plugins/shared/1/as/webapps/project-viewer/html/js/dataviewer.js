@@ -209,13 +209,9 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 
     var section = "";
 
-    if (experiment_type == "LSR_FORTESSA") {
+    if (experiment_type == "LSR_FORTESSA" || experiment_type == "FACS_ARIA") {
 
-        section = "webapp-section_lsrfortessa-viewer";
-
-    } else if (experiment_type == "FACS_ARIA") {
-
-        section = "webapp-section_facsaria-viewer";
+        section = "webapp-section_bdfacsdiva-viewer";
 
     } else if (experiment_type == "MICROSCOPY") {
 
@@ -371,6 +367,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             var e = requested_experiments[i]["properties"][requested_exp_property_name];
             var c = requested_experiments[i].code;
+            var m = requested_experiments[i].metaprojects;
             var p = requested_experiments[i].permId;
 
             // Add the experiment name with link to the viewer web app
@@ -378,13 +375,27 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 DATAVIEWER.linkToExperiment(p, experimentType));
             experimentTypePanelBodyId.append(link);
 
+            // Add tags
+            var tags = $("<div>").addClass("experiment_tags");
+            var tagsStr = "";
+            for (var j = 0; j < m.length; j++) {
+                if (m[j].name !== undefined && m[j].name != "") {
+                    tagsStr = tagsStr + "<span class=\"label label-info\">" + m[j].name + "</span>&nbsp;";
+                }
+            }
+            if (tagsStr == "") {
+                tagsStr = "<i>No tags assigned.</i>";
+            }
+            tags.html(tagsStr);
+            experimentTypePanelBodyId.append(tags);
+
             var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
             if (d === undefined || d === "") {
-                d = "No description provided.";
+                d = "<i>No description provided.</i>";
             }
 
             // Display the description
-            var q = $("<div>").addClass("experiment_description").text(d);
+            var q = $("<div>").addClass("experiment_description").html(d);
             experimentTypePanelBodyId.append(q);
 
         }
