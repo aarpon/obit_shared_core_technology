@@ -34,7 +34,11 @@ function DataModel() {
             DATAMODEL.data = [];
 
             // Report the error
-            DATAVIEWER.displayStatus("Could not retrieve the list of projects!", "error");
+            if (DATAMODEL.openbisServer.getSession() == null) {
+                DATAVIEWER.displayStatus("Your session has expired. Please log in to openBIS and try again.", "error");
+            } else {
+                DATAVIEWER.displayStatus("Could not retrieve the list of projects!", "error");
+            }
 
         } else {
 
