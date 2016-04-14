@@ -14,8 +14,11 @@ def process(transaction, parameters, tableBuilder):
     row = tableBuilder.addRow()
 
     # Retrieve parameters from client
-    metaprojectCode = parameters.get("metaprojectCode")
     username = parameters.get("userName")
+    metaprojectCode = parameters.get("metaprojectCode")
+    metaprojectDescr = parameters.get("metaprojectDescr")
+    if metaprojectDescr is None:
+        metaprojectDescr = ""
 
     # Try retrieving the metaproject (tag)
     metaproject = transaction.getMetaproject(metaprojectCode, username)
@@ -24,7 +27,7 @@ def process(transaction, parameters, tableBuilder):
 
         # Create the metaproject (tag)
         metaproject = transaction.createNewMetaproject(metaprojectCode,
-                                                       "Test",
+                                                       metaprojectDescr,
                                                        username)
 
         # Check that creation was succcessful
