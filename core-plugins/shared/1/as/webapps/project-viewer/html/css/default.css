@@ -43,5 +43,12 @@ body {
     font-size: 0.8em;
     padding-left: 10px;
     font-weight: normal;
+    margin-bottom: 3px;
+}
+
+.experiment_hostname {
+    font-size: 0.8em;
+    padding-left: 10px;
+    font-weight: normal;
     margin-bottom: 9px;
 }

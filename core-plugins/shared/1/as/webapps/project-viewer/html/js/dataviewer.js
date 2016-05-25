@@ -289,6 +289,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     var requested_experiments = experiments[experimentType];
     var requested_exp_property_name = experimentType + "_EXPERIMENT_NAME";
     var requested_exp_descr_property_name =  experimentType + "_EXPERIMENT_DESCRIPTION";
+    var requested_exp_descr_property_hostname =  experimentType + "_EXPERIMENT_ACQ_HARDWARE_FRIENDLY_NAME";
 
     var experimentDescription = DATAVIEWER.getHardwareDependentExperimentDescription(experimentType);
 
@@ -369,6 +370,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             var c = requested_experiments[i].code;
             var m = requested_experiments[i].metaprojects;
             var p = requested_experiments[i].permId;
+            var f = "";
+            if (requested_experiments[i]["properties"][requested_exp_descr_property_hostname]) {
+                // This experiment has the hostname friendly name property associated to it
+                f = requested_experiments[i]["properties"][requested_exp_descr_property_hostname];
+            }
 
             // Add the experiment name with link to the viewer web app
             var link = $("<a>").addClass("experiment").text(e).attr("href", "#").attr("title", c).click(
@@ -397,6 +403,16 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             // Display the description
             var q = $("<div>").addClass("experiment_description").html(d);
             experimentTypePanelBodyId.append(q);
+
+            // If the hostname friendly name is define, display it
+            var fS = "";
+            if (f == "") {
+                fS = "<i>Acquisition station name unknown.</i>"
+            } else {
+                fS = "Acquired on " + f + ".";
+            }
+            var fN = $("<div>").addClass("experiment_hostname").html(fS);
+            experimentTypePanelBodyId.append(fN);
 
         }
     }
