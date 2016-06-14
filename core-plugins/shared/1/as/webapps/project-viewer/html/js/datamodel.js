@@ -26,6 +26,9 @@ function DataModel() {
     // Store the data
     this.data = [];
 
+    // Map of the metaprojects references
+    this.metaprojectsMap = {};
+
     // Retrieve all projects
     this.openbisServer.listProjects(function(response) {
         if (response.error) {
@@ -50,6 +53,42 @@ function DataModel() {
 }
 
 /**
+ * Resolve a metaproject when a reference is passed
+ */
+DataModel.prototype.resolveMetaproject = function(metaproject) {
+
+    // If no metaprojects, return the empty object and stop here
+    if (metaproject.length == 0) {
+        return metaproject;
+    }
+
+    // Process all metaprojects
+    for (var i = 0; i < metaproject.length; i++) {
+
+        // If valid metaproject, store it and return it
+        if (metaproject[i]['@type'] &&  metaproject[i]['@type'].localeCompare("Metaproject") == 0) {
+
+            // Store the metaproject for future lookup
+            this.metaprojectsMap[metaproject[i]['@id']] = metaproject[i];
+
+            // Go to the next metaproject
+            continue;
+        }
+
+        // If id (reference), retrieve stored metaproject and replace the id
+        if (typeof(metaproject[i]) === "number") {
+            // Replace the reference with the actualobject
+            metaproject[i] = this.metaprojectsMap[metaproject[i]];
+        }
+
+    }
+
+    // Return the updated metaproject array.
+    return metaproject;
+
+};
+
+/**
  * Initialize the data structure with space and project information and
  * display it using the DataViewer.
  * @param projects array of projects.
@@ -64,7 +103,7 @@ DataModel.prototype.initDataStructure = function(projects) {
 
         // Is the space already in the data array?
         if (! DATAMODEL.data.hasOwnProperty(spaceCode)) {
-            DATAMODEL.data[spaceCode] = new Array();
+            DATAMODEL.data[spaceCode] = [];
         }
 
         // Add the project object. We will populate it later on

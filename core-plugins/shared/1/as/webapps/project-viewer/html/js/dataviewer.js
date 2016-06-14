@@ -368,7 +368,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             var e = requested_experiments[i]["properties"][requested_exp_property_name];
             var c = requested_experiments[i].code;
-            var m = requested_experiments[i].metaprojects;
+            var m = DATAMODEL.resolveMetaproject(requested_experiments[i].metaprojects);
             var p = requested_experiments[i].permId;
             var f = "";
             if (requested_experiments[i]["properties"][requested_exp_descr_property_hostname]) {
