@@ -187,6 +187,10 @@ DataViewer.prototype.getHardwareDependentExperimentDescription = function(experi
 
         description = "Flow experiments (BD FACS Aria)";
 
+    } else if (experiment_type == "INFLUX") {
+
+        description = "Flow experiments (BD Influx)";
+
     } else if (experiment_type == "MICROSCOPY") {
 
         description = "Microscopy experiments (various instruments)";
@@ -209,7 +213,7 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 
     var section = "";
 
-    if (experiment_type == "LSR_FORTESSA" || experiment_type == "FACS_ARIA") {
+    if (experiment_type == "LSR_FORTESSA" || experiment_type == "FACS_ARIA" || experiment_type == "INFLUX") {
 
         section = "webapp-section_bdfacsdiva-viewer";
 
@@ -255,18 +259,20 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
     this.cleanExperiments();
     this.displayExperiments(project, "LSR_FORTESSA");
     this.displayExperiments(project, "FACS_ARIA");
+    this.displayExperiments(project, "INFLUX");
     this.displayExperiments(project, "MICROSCOPY");
 };
 
 /**
  * Display the data.
  * @param project Project object.
- * @param experimentType string One of "LSR_FORTESSA", "FACS_ARIA", "MICROSCOPY".
+ * @param experimentType string One of "LSR_FORTESSA", "FACS_ARIA", "INFLUX", "MICROSCOPY".
  */
 DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Check!
-    if (experimentType != "LSR_FORTESSA" && experimentType != "FACS_ARIA" && experimentType != "MICROSCOPY") {
+    if (experimentType != "LSR_FORTESSA" && experimentType != "FACS_ARIA" &&
+        experimentType != "INFLUX" && experimentType != "MICROSCOPY") {
 
         DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
         return;
@@ -426,6 +432,7 @@ DataViewer.prototype.cleanExperiments = function() {
 
     $("#lsr_fortessa").empty();
     $("#facs_aria").empty();
+    $("#influx").empty();
     $("#microscopy").empty();
 
 };

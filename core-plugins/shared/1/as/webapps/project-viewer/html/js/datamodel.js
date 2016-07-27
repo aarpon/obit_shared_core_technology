@@ -165,6 +165,22 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
             }
         });
 
+    // Retrieve the INFLUX_EXPERIMENT information for current project
+    this.openbisServer.listExperiments([project["project"]],
+        "INFLUX_EXPERIMENT", function(response) {
+
+            if (response.error) {
+                DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
+                    response.error.message + "\"", "error");
+
+            } else {
+
+                project["experiments"]["INFLUX"] = response.result;
+                DATAVIEWER.displayExperiments(project, "INFLUX");
+
+            }
+        });
+
     // Retrieve the MICROSCOPY_EXPERIMENT information for current project
     this.openbisServer.listExperiments([project["project"]],
         "MICROSCOPY_EXPERIMENT", function(response) {
