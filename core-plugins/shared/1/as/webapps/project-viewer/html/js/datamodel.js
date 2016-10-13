@@ -8,6 +8,12 @@
 
 /**
  * Define a model class to access all project related information.
+ *
+ *  The Project Viewer currently recognizes only the experiment types from the microscopy
+ *  and flow core technologies. However, it cannot know in advance which core technologies
+ *  are active. For this reason, the web app will silently ignore errors returned from the
+ *  server when trying to access experiment types that are not registered.
+ *
  */
 function DataModel() {
 
@@ -138,9 +144,8 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
         "LSR_FORTESSA_EXPERIMENT", function(response) {
 
         if (response.error) {
-            DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
-                response.error.message + "\"", "error");
-
+            // The experiment type LSR_FORTESSA_EXPERIMENT is not registered.
+            // We ignore it.
         } else {
 
             project["experiments"]["LSR_FORTESSA"] = response.result;
@@ -154,9 +159,8 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
         "FACS_ARIA_EXPERIMENT", function(response) {
 
             if (response.error) {
-                DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
-                    response.error.message + "\"", "error");
-
+                // The experiment type FACS_ARIA_EXPERIMENT is not registered.
+                // We ignore it.
             } else {
 
                 project["experiments"]["FACS_ARIA"] = response.result;
@@ -170,9 +174,8 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
         "INFLUX_EXPERIMENT", function(response) {
 
             if (response.error) {
-                DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
-                    response.error.message + "\"", "error");
-
+                // The experiment type INFLUX_EXPERIMENT is not registered.
+                // We ignore it.
             } else {
 
                 project["experiments"]["INFLUX"] = response.result;
@@ -186,9 +189,8 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
         "MICROSCOPY_EXPERIMENT", function(response) {
 
             if (response.error) {
-                DATAVIEWER.displayStatus("Could not retrieve experiments! The error was \"" +
-                    response.error.message + "\"", "error");
-
+                // The experiment type MICROSCOPY_EXPERIMENT is not registered.
+                // We ignore it.
             } else {
 
                 project["experiments"]["MICROSCOPY"] = response.result;
