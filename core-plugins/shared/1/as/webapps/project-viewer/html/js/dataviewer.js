@@ -12,6 +12,8 @@ function DataViewer() {
 
     "use strict";
 
+    // Hide experiment panels
+    this.hideExperimentPanels();
 }
 
 /**
@@ -171,39 +173,6 @@ DataViewer.prototype.retrieveProjectInfo = function(project) {
 };
 
 /**
- * Return a description of the acquisition hardware to be associated to the experiments.
- * @param experiment_type Type of experiment, one of LST_FORTESSA, FACS_ARIA, MICROSCOPY
- * @returns string Hardware-dependent experiment description.
- */
-DataViewer.prototype.getHardwareDependentExperimentDescription = function(experiment_type) {
-
-    var description = "";
-
-    if (experiment_type == "LSR_FORTESSA") {
-
-        description = "Flow experiments (BD LSR Fortessa)";
-
-    } else if (experiment_type == "FACS_ARIA") {
-
-        description = "Flow experiments (BD FACS Aria)";
-
-    } else if (experiment_type == "INFLUX") {
-
-        description = "Flow experiments (BD Influx)";
-
-    } else if (experiment_type == "MICROSCOPY") {
-
-        description = "Microscopy experiments (various instruments)";
-
-    } else {
-        DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
-        description = ""
-    }
-
-    return description;
-};
-
-/**
  * Link to the requested experiment.
  * @param permId Permanent ID of the experiment.
  * @param experiment_type Type of experiment, one of LST_FORTESSA, FACS_ARIA, MICROSCOPY
@@ -248,6 +217,10 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
     // retrieved
     if (! (project.hasOwnProperty("experiments") && project["experiments"] != {})) {
 
+        // Reset the view
+        this.hideExperimentPanels();
+        this.cleanExperiments();
+
         // Retrieve experiments info and pass again this function for display
         DATAMODEL.retrieveExperimentDataForProject(project, DATAVIEWER.displayExperiments);
 
@@ -256,6 +229,7 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
     }
 
     // If the experiment data was already available, we display it.
+    this.hideExperimentPanels();
     this.cleanExperiments();
     this.displayExperiments(project, "LSR_FORTESSA");
     this.displayExperiments(project, "FACS_ARIA");
@@ -284,90 +258,36 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         return;
     }
 
-    // Use the lower case experiment type as a key
-    var experimentTypeKey = experimentType.toLowerCase();
+    // Get the id of the experiment class
+    var experimentTypePanelGroupDiv, experimentTypePanelBodyDiv;
+    if (experimentType == "LSR_FORTESSA") {
+        experimentTypePanelGroupDiv = $("#flow_analyzers");
+        experimentTypePanelBodyDiv = $("#flow_analyzers_panel_body");
+    }
+    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+        experimentTypePanelGroupDiv = $("#flow_sorters");
+        experimentTypePanelBodyDiv = $("#flow_sorters_panel_body");
+    }
+    else if (experimentType == "MICROSCOPY") {
+        experimentTypePanelGroupDiv = $("#microscopy");
+        experimentTypePanelBodyDiv = $("#microscopy_panel_body");
+    } else {
+
+        return;
+    }
 
     // Retrieve the experiments
     var experiments = project["experiments"];
 
     // Get the requested experiments
-    var requested_exp_div = $("#" + experimentTypeKey);
     var requested_experiments = experiments[experimentType];
     var requested_exp_property_name = experimentType + "_EXPERIMENT_NAME";
     var requested_exp_descr_property_name =  experimentType + "_EXPERIMENT_DESCRIPTION";
     var requested_exp_descr_property_hostname =  experimentType + "_EXPERIMENT_ACQ_HARDWARE_FRIENDLY_NAME";
 
-    var experimentDescription = DATAVIEWER.getHardwareDependentExperimentDescription(experimentType);
-
     // Add a title
     var nExp =  requested_experiments.length;
     if (nExp > 0) {
-
-        // Create the panel group
-        var panel_group = $("<div>")
-            .addClass("panel-group")
-            .attr("id", experimentTypeKey + "_group");
-        requested_exp_div.append(panel_group);
-
-        // Get and retrieve the reference
-        var panelGroupId = $("#" + experimentTypeKey + "_group");
-
-        // Create a panel for the experiments
-        var experiments_type_panel = $("<div>")
-            .attr("id", experimentTypeKey + "_panel")
-            .addClass("panel")
-            .addClass("panel-success");
-
-        // Add it to the group
-        panelGroupId.append(experiments_type_panel);
-
-        // Retrieve and store the reference
-        var experimentTypeId = $("#" + experimentTypeKey + "_panel");
-
-        // Add the heading
-        var experiments_type_panel_heading = $("<div>")
-            .attr("id", experimentTypeKey + "_heading")
-            .addClass("panel-heading");
-        experimentTypeId.append(experiments_type_panel_heading);
-
-        // Retrieve and store the reference
-        var experimentTypeHeadingId = $("#" + experimentTypeKey + "_heading");
-
-        // Add the title
-        var experiments_type_panel_title = $("<h4>")
-            .attr("id", experimentTypeKey + "_heading_title")
-            .addClass("panel-title");
-        experimentTypeHeadingId.append(experiments_type_panel_title);
-
-        // Get and store reference
-        var experimentTypePanelTitleId = $("#" + experimentTypeKey + "_heading_title");
-
-        var experiments_type_panel_title_ref = $("<a>")
-            .attr("data-toggle", "collapse")
-            .attr("data-parent", "#" + experimentTypeKey + "_panel_collapse")
-            .attr("href", "#" + experimentTypeKey + "_panel_collapse")
-            .text(experimentDescription);
-        experimentTypePanelTitleId.append(experiments_type_panel_title_ref);
-
-        // Add the panel collapse div
-        var experiments_type_panel_collapse = $("<div>")
-            .attr("id", experimentTypeKey + "_panel_collapse")
-            .addClass("panel-collapse")
-            .addClass("collapse")
-            .addClass("in");
-        experimentTypeId.append(experiments_type_panel_collapse);
-
-        // Retrieve and store the reference
-        var experimentTypePanelCollapseId = $("#" + experimentTypeKey + "_panel_collapse");
-
-        // Add the body
-        var experiments_type_panel_body = $("<div>")
-            .attr("id", experimentTypeKey + "_panel_body")
-            .addClass("panel-body");
-        experimentTypePanelCollapseId.append(experiments_type_panel_body);
-
-        // Retrieve and store the reference
-        var experimentTypePanelBodyId = $("#" + experimentTypeKey + "_panel_body");
 
         // Display experiments
         for (var i = 0; i < requested_experiments.length; i++) {
@@ -385,7 +305,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             // Add the experiment name with link to the viewer web app
             var link = $("<a>").addClass("experiment").text(e).attr("href", "#").attr("title", c).click(
                 DATAVIEWER.linkToExperiment(p, experimentType));
-            experimentTypePanelBodyId.append(link);
+            experimentTypePanelBodyDiv.append(link);
 
             // Add tags
             var tags = $("<div>").addClass("experiment_tags");
@@ -399,7 +319,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 tagsStr = "<i>No tags assigned.</i>";
             }
             tags.html(tagsStr);
-            experimentTypePanelBodyId.append(tags);
+            experimentTypePanelBodyDiv.append(tags);
 
             var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
             if (d === undefined || d === "") {
@@ -408,7 +328,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             // Display the description
             var q = $("<div>").addClass("experiment_description").html(d);
-            experimentTypePanelBodyId.append(q);
+            experimentTypePanelBodyDiv.append(q);
 
             // If the hostname friendly name is define, display it
             var fS = "";
@@ -418,9 +338,13 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 fS = "Acquired on " + f + ".";
             }
             var fN = $("<div>").addClass("experiment_hostname").html(fS);
-            experimentTypePanelBodyId.append(fN);
+            experimentTypePanelBodyDiv.append(fN);
 
         }
+
+        // Show the panel group
+        experimentTypePanelGroupDiv.show();
+
     }
 
 };
@@ -430,9 +354,19 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
   */
 DataViewer.prototype.cleanExperiments = function() {
 
-    $("#lsr_fortessa").empty();
-    $("#facs_aria").empty();
-    $("#influx").empty();
-    $("#microscopy").empty();
+    $("#flow_analyzers_panel_body").empty();
+    $("#flow_sorters_panel_body").empty();
+    $("#microscopy_panel_body").empty();
 
 };
+
+/**
+ * Hide experiment panels.
+ */
+DataViewer.prototype.hideExperimentPanels = function() {
+
+    $("#flow_analyzers").hide();
+    $("#flow_sorters").hide();
+    $("#microscopy").hide();
+
+}

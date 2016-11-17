@@ -49,18 +49,76 @@
         </div>
         <div class="col-md-8">
             <h3>Experiments</h3>
-            <div id="lsr_fortessa">&nbsp;</div>
-            <div id="facs_aria">&nbsp;</div>
-            <div id="influx">&nbsp;</div>
-            <div id="microscopy">&nbsp;</div>
+
+            <!-- Microscopes -->
+            <div id="microscopy">
+                <div class="panel-group" id="microscopy-group">
+                    <div id="microscopy_panel" class="panel panel-success">
+                        <div id="microscopy_heading" class="panel-heading">
+                            <h4 id="microscopy_heading_title" class="panel-title">
+                                <a data-toggle="collapse"
+                                   data-parent="#microscopy_panel_collapse"
+                                   href="#microscopy_panel_collapse">
+                                    Microscopes
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="microscopy_panel_collapse" class="panel-collapse collapse in">
+                            <div id="microscopy_panel_body" class="panel-body"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow cytometry analyzers -->
+            <div id="flow_analyzers">
+                <div class="panel-group" id="flow_analyzers-group">
+                    <div id="flow_analyzers_panel" class="panel panel-success">
+                        <div id="flow_analyzers_heading" class="panel-heading">
+                            <h4 id="flow_analyzers_heading_title" class="panel-title">
+                                <a data-toggle="collapse"
+                                   data-parent="#flow_analyzers_panel_collapse"
+                                   href="#flow_analyzers_panel_collapse">
+                                    Flow Cytometry Analyzers
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="flow_analyzers_panel_collapse" class="panel-collapse collapse in">
+                            <div id="flow_analyzers_panel_body" class="panel-body"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow cytometry sorters -->
+            <div id="flow_sorters">
+                <div class="panel-group" id="flow_sorters-group">
+                    <div id="flow_sorters_panel" class="panel panel-success">
+                        <div id="flow_sorters_heading" class="panel-heading">
+                            <h4 id="flow_sorters_heading_title" class="panel-title">
+                                <a data-toggle="collapse"
+                                   data-parent="#flow_sorters_panel_collapse"
+                                   href="#flow_sorters_panel_collapse">
+                                    Flow Cytometry Sorters
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="flow_sorters_panel_collapse" class="panel-collapse collapse in">
+                            <div id="flow_sorters_panel_body" class="panel-body"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
     </div>
 
 </div>
 
 <script>
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         /* Set the configuration */
         window.CONFIG = CONFIG;
