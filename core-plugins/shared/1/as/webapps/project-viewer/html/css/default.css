@@ -16,6 +16,13 @@ body {
     margin-left: 5px;
 }
 
+#filters {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    font-size: 10px;
+}
+
 #flow_analyzers {
     margin-bottom: 5px;
     margin-right: 5px;

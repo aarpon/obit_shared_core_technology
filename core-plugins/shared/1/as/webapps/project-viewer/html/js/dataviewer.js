@@ -14,6 +14,8 @@ function DataViewer() {
 
     // Hide experiment panels
     this.hideExperimentPanels();
+
+    this.uniqueMataProjectIds = [];
 }
 
 /**
@@ -213,28 +215,30 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
  */
 DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
+    // Clear metaprojects map and IDs
+    DATAMODEL.metaprojectsMap = {};
+    this.uniqueMataProjectIds = [];
+
+    // Clean
+    this.hideExperimentPanels();
+    this.cleanExperiments();
+    this.clearFilters();
+
     // Check whether the experiment data for current project was already
     // retrieved
     if (! (project.hasOwnProperty("experiments") && project["experiments"] != {})) {
 
-        // Reset the view
-        this.hideExperimentPanels();
-        this.cleanExperiments();
-
         // Retrieve experiments info and pass again this function for display
         DATAMODEL.retrieveExperimentDataForProject(project, DATAVIEWER.displayExperiments);
 
-        // Return here if we launched the retrieval of experiment data
-        return;
-    }
+    } else {
 
-    // If the experiment data was already available, we display it.
-    this.hideExperimentPanels();
-    this.cleanExperiments();
-    this.displayExperiments(project, "LSR_FORTESSA");
-    this.displayExperiments(project, "FACS_ARIA");
-    this.displayExperiments(project, "INFLUX");
-    this.displayExperiments(project, "MICROSCOPY");
+        // If the experiment data was already available, we display it.
+        this.displayExperiments(project, "LSR_FORTESSA");
+        this.displayExperiments(project, "FACS_ARIA");
+        this.displayExperiments(project, "INFLUX");
+        this.displayExperiments(project, "MICROSCOPY");
+    }
 };
 
 /**
@@ -302,24 +306,28 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 f = requested_experiments[i]["properties"][requested_exp_descr_property_hostname];
             }
 
+            // Wrap an experiment in a div
+            var experimentContainerDir = $("<div>").addClass("experiment_container");
+            experimentTypePanelBodyDiv.append(experimentContainerDir);
+
             // Add the experiment name with link to the viewer web app
             var link = $("<a>").addClass("experiment").text(e).attr("href", "#").attr("title", c).click(
                 DATAVIEWER.linkToExperiment(p, experimentType));
-            experimentTypePanelBodyDiv.append(link);
+            experimentContainerDir.append(link);
 
             // Add tags
             var tags = $("<div>").addClass("experiment_tags");
             var tagsStr = "";
             for (var j = 0; j < m.length; j++) {
                 if (m[j].name !== undefined && m[j].name != "") {
-                    tagsStr = tagsStr + "<span class=\"label label-info\">" + m[j].name + "</span>&nbsp;";
+                    tagsStr = tagsStr + "<span class=\"label label-info tag\">" + m[j].name + "</span>&nbsp;";
                 }
             }
             if (tagsStr == "") {
                 tagsStr = "<i>No tags assigned.</i>";
             }
             tags.html(tagsStr);
-            experimentTypePanelBodyDiv.append(tags);
+            experimentContainerDir.append(tags);
 
             var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
             if (d === undefined || d === "") {
@@ -328,7 +336,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             // Display the description
             var q = $("<div>").addClass("experiment_description").html(d);
-            experimentTypePanelBodyDiv.append(q);
+            experimentContainerDir.append(q);
 
             // If the hostname friendly name is define, display it
             var fS = "";
@@ -338,7 +346,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 fS = "Acquired on " + f + ".";
             }
             var fN = $("<div>").addClass("experiment_hostname").html(fS);
-            experimentTypePanelBodyDiv.append(fN);
+            experimentContainerDir.append(fN);
 
         }
 
@@ -346,6 +354,9 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         experimentTypePanelGroupDiv.show();
 
     }
+
+    // Display the filters
+    this.displayFilters(DATAMODEL.metaprojectsMap);
 
 };
 
@@ -369,4 +380,94 @@ DataViewer.prototype.hideExperimentPanels = function() {
     $("#flow_sorters").hide();
     $("#microscopy").hide();
 
-}
+};
+
+/**
+ * Clear filters.
+ */
+DataViewer.prototype.clearFilters = function() {
+
+    $("#filters").empty();
+};
+
+/**
+ * Display filters for current project.
+ * @param metaprojectsMap Map of metaprojects.
+ */
+DataViewer.prototype.displayFilters = function(metaprojectsMap) {
+
+    // Filters div
+    var filtersDiv = $("#filters");
+
+    for (var prop in metaprojectsMap) {
+
+        // Get metaproject's numeric ID in openBIS
+        var id = metaprojectsMap[prop].id;
+
+        if ($.inArray(id, this.uniqueMataProjectIds) != -1) {
+            continue;
+        }
+        this.uniqueMataProjectIds.push(id);
+
+        var cbDiv = $("<div>").addClass('checkbox-inline');
+        var lbDiv = $("<label />").text(metaprojectsMap[prop].name);
+        var inputObj = $("<input />")
+            .attr("type", "checkbox")
+            .prop('checked', true)
+            .click(function(){ DATAVIEWER.filterExperimentByTag(); })
+            .attr("id", metaprojectsMap[prop].name)
+            .attr("value", metaprojectsMap[prop].name);
+        lbDiv.append(inputObj);
+        cbDiv.append(lbDiv);
+        filtersDiv.append(cbDiv);
+
+    }
+
+};
+
+/**
+ * Only show experiments for selected tas.
+ */
+DataViewer.prototype.filterExperimentByTag = function() {
+
+    // Get all tag checkboxes
+    var tagCheckBoxes = $('#filters').find(':checkbox');
+
+    var tagChecked = [];
+    var tagNames = [];
+    for (var i = 0; i < tagCheckBoxes.length; i++) {
+        tagChecked.push(tagCheckBoxes[i].checked);
+        tagNames.push(tagCheckBoxes[i].id);
+    }
+
+    // Get all* experiments
+    var experimentContainers = $("div.experiment_container");
+
+    // Go over all experiments
+    for (var j = 0; j < experimentContainers.length; j++) {
+
+        var tagsForExp = $(experimentContainers[j]).find("span");
+
+        // If any of its tag is checked, we display it; otherwise
+        // we hide it.
+        var show = false;
+        $(tagsForExp).each(function() {
+
+            var tagName = $(this).text();
+
+            var index = tagNames.indexOf(tagName);
+            if (index != -1) {
+               if (tagChecked[index] == true) {
+                    show = true;
+               }
+            }
+
+            if (show == true) {
+                $(experimentContainers[j]).show();
+            } else {
+                $(experimentContainers[j]).hide();
+            }
+
+        });
+    }
+};
