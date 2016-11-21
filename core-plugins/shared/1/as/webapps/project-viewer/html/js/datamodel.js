@@ -101,8 +101,12 @@ DataModel.prototype.resolveMetaproject = function(metaproject, experimentType) {
 
         // If id (reference), retrieve stored metaproject and replace the id
         if (typeof(metaproject[i]) === "number") {
-            // Replace the reference with the actualobject
-            metaproject[i] = metaprojectsMap[metaproject[i]];
+            // Replace the reference with the actual object
+            if (metaproject[i] in metaprojectsMap == false) {
+                console.log("Error: the pointer to the tags belong to a tag assigned to another map!")
+            } else {
+                metaproject[i] = metaprojectsMap[metaproject[i]];
+            }
         }
 
     }
