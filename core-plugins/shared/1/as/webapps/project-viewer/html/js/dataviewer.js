@@ -219,7 +219,9 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
     // Clear metaprojects map and ids
-    DATAMODEL.metaprojectsMap = {};
+    DATAMODEL.microscopyMetaprojectsMap = {};
+    DATAMODEL.flowAnalysersMetaprojectsMap = {};
+    DATAMODEL.flowSortersMetaprojectsMap = {};
     this.uniqueMicroscopyMetaProjectIds = [];
     this.uniqueFlowAnalysersMetaProjectIds = [];
     this.uniqueFlowSortersMetaProjectIds = [];
@@ -303,7 +305,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             var e = requested_experiments[i]["properties"][requested_exp_property_name];
             var c = requested_experiments[i].code;
-            var m = DATAMODEL.resolveMetaproject(requested_experiments[i].metaprojects);
+            var m = DATAMODEL.resolveMetaproject(requested_experiments[i].metaprojects, experimentType);
             var p = requested_experiments[i].permId;
             var f = "";
             if (requested_experiments[i]["properties"][requested_exp_descr_property_hostname]) {
@@ -361,7 +363,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     }
 
     // Display the filters
-    this.displayFilters(DATAMODEL.metaprojectsMap, experimentType);
+    this.displayFilters(experimentType);
 
 };
 
@@ -399,28 +401,31 @@ DataViewer.prototype.clearFilters = function() {
 
 /**
  * Display filters for current project.
- * @param metaprojectsMap Map of metaprojects.
+ * @param experimentType Type of the experiment.
  */
-DataViewer.prototype.displayFilters = function(metaprojectsMap, experimentType) {
+DataViewer.prototype.displayFilters = function(experimentType) {
 
     // Keep track of the tags already shows for this experiment type
     var uniqueMetaProjectIds;
+    var metaprojectsMap;
 
     // Filters div
     var filterDiv;
     if (experimentType == "MICROSCOPY") {
         filterDiv = $("#filters_microscopy");
         uniqueMetaProjectIds = this.uniqueMicroscopyMetaProjectIds;
+        metaprojectsMap = DATAMODEL.microscopyMetaprojectsMap;
     } else if (experimentType == "LSR_FORTESSA") {
         filterDiv = $("#filters_flow_analyzers");
         uniqueMetaProjectIds = this.uniqueFlowAnalysersMetaProjectIds;
+        metaprojectsMap = DATAMODEL.flowAnalysersMetaprojectsMap;
     } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
         filterDiv = $("#filters_flow_sorters");
         uniqueMetaProjectIds = this.uniqueFlowSortersMetaProjectIds;
+        metaprojectsMap = DATAMODEL.flowSortersMetaprojectsMap;
     } else {
         return;
     }
-
 
     var cbDiv, lbDiv, inputObj;
     for (var prop in metaprojectsMap) {

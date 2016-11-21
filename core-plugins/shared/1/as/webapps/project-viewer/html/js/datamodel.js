@@ -33,7 +33,9 @@ function DataModel() {
     this.data = [];
 
     // Map of the metaprojects references
-    this.metaprojectsMap = {};
+    this.microscopyMetaprojectsMap = {};
+    this.flowAnalysersMetaprojectsMap = {};
+    this.flowSortersMetaprojectsMap = {};
 
     // Retrieve all projects
     this.openbisServer.listProjects(function(response) {
@@ -61,12 +63,28 @@ function DataModel() {
 /**
  * Resolve a metaproject when a reference is passed
  */
-DataModel.prototype.resolveMetaproject = function(metaproject) {
+DataModel.prototype.resolveMetaproject = function(metaproject, experimentType) {
+
 
     // If no metaprojects, return the empty object and stop here
     if (metaproject.length == 0) {
         return metaproject;
     }
+
+    // Reference to the correct map (per experiment type)
+    var metaprojectsMap;
+
+    // Filters div
+    if (experimentType == "MICROSCOPY") {
+        metaprojectsMap = this.microscopyMetaprojectsMap;
+    } else if (experimentType == "LSR_FORTESSA") {
+        metaprojectsMap = this.flowAnalysersMetaprojectsMap;
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+        metaprojectsMap = this.flowSortersMetaprojectsMap;
+    } else {
+        return;
+    }
+
 
     // Process all metaprojects
     for (var i = 0; i < metaproject.length; i++) {
@@ -75,7 +93,7 @@ DataModel.prototype.resolveMetaproject = function(metaproject) {
         if (metaproject[i]['@type'] &&  metaproject[i]['@type'].localeCompare("Metaproject") == 0) {
 
             // Store the metaproject for future lookup
-            this.metaprojectsMap[metaproject[i]['@id']] = metaproject[i];
+            metaprojectsMap[metaproject[i]['@id']] = metaproject[i];
 
             // Go to the next metaproject
             continue;
@@ -84,7 +102,7 @@ DataModel.prototype.resolveMetaproject = function(metaproject) {
         // If id (reference), retrieve stored metaproject and replace the id
         if (typeof(metaproject[i]) === "number") {
             // Replace the reference with the actualobject
-            metaproject[i] = this.metaprojectsMap[metaproject[i]];
+            metaproject[i] = metaprojectsMap[metaproject[i]];
         }
 
     }
