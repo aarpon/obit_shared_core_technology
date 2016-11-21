@@ -1,6 +1,6 @@
 /**
  * DataViewer class
- * 
+ *
  * @author Aaron Ponti
  *
  */
@@ -356,7 +356,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     }
 
     // Display the filters
-    this.displayFilters(DATAMODEL.metaprojectsMap);
+    this.displayFilters(DATAMODEL.metaprojectsMap, experimentType);
 
 };
 
@@ -387,17 +387,28 @@ DataViewer.prototype.hideExperimentPanels = function() {
  */
 DataViewer.prototype.clearFilters = function() {
 
-    $("#filters").empty();
+    $("#filters_microscopy").empty();
+    $("#filters_flow_analyzers").empty();
+    $("#filters_flow_sorters").empty();
 };
 
 /**
  * Display filters for current project.
  * @param metaprojectsMap Map of metaprojects.
  */
-DataViewer.prototype.displayFilters = function(metaprojectsMap) {
+DataViewer.prototype.displayFilters = function(metaprojectsMap, experimentType) {
 
     // Filters div
-    var filtersDiv = $("#filters");
+    var filterDiv;
+    if (experimentType == "MICROSCOPY") {
+        filterDiv = $("#filters_microscopy");
+    } else if (experimentType == "LSR_FORTESSA") {
+        filterDiv = $("#filters_flow_analyzers");
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+        filterDiv = $("#filters_flow_sorters");
+    } else {
+        return;
+    }
 
     for (var prop in metaprojectsMap) {
 
@@ -414,12 +425,12 @@ DataViewer.prototype.displayFilters = function(metaprojectsMap) {
         var inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
-            .click(function(){ DATAVIEWER.filterExperimentByTag(); })
+            .click(function(){ DATAVIEWER.filterExperimentByTag(experimentType); })
             .attr("id", metaprojectsMap[prop].name)
             .attr("value", metaprojectsMap[prop].name);
         lbDiv.append(inputObj);
         cbDiv.append(lbDiv);
-        filtersDiv.append(cbDiv);
+        filterDiv.append(cbDiv);
 
     }
 
@@ -428,10 +439,25 @@ DataViewer.prototype.displayFilters = function(metaprojectsMap) {
 /**
  * Only show experiments for selected tas.
  */
-DataViewer.prototype.filterExperimentByTag = function() {
+DataViewer.prototype.filterExperimentByTag = function(experimentType) {
+
+    // Filters div
+    var filterDiv, experimentContainers;
+    if (experimentType == "MICROSCOPY") {
+        filterDiv = $("#filters_microscopy");
+        experimentContainers = $("#microscopy .experiment_container");
+    } else if (experimentType == "LSR_FORTESSA") {
+        filterDiv = $("#filters_flow_analyzers");
+        experimentContainers = $("#flow_analyzers .experiment_container");
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+        filterDiv = $("#filters_flow_sorters");
+        experimentContainers = $("#flow_sorters .experiment_container");
+    } else {
+        return;
+    }
 
     // Get all tag checkboxes
-    var tagCheckBoxes = $('#filters').find(':checkbox');
+    var tagCheckBoxes = filterDiv.find(':checkbox');
 
     var tagChecked = [];
     var tagNames = [];
@@ -439,9 +465,6 @@ DataViewer.prototype.filterExperimentByTag = function() {
         tagChecked.push(tagCheckBoxes[i].checked);
         tagNames.push(tagCheckBoxes[i].id);
     }
-
-    // Get all* experiments
-    var experimentContainers = $("div.experiment_container");
 
     // Go over all experiments
     for (var j = 0; j < experimentContainers.length; j++) {

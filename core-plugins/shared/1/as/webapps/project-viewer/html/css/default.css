@@ -16,10 +16,18 @@ body {
     margin-left: 5px;
 }
 
-#filters {
-    margin-left: 20px;
-    margin-right: 10px;
-    margin-bottom: 10px;
+#filters_microscopy {
+    margin: 5px 10px 5px 20px;
+    font-size: 10px;
+}
+
+#filters_flow_analyzers {
+    margin: 5px 10px 5px 20px;
+    font-size: 10px;
+}
+
+#filters_flow_sorters {
+    margin: 5px 10px 5px 20px;
     font-size: 10px;
 }
 
