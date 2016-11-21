@@ -15,7 +15,10 @@ function DataViewer() {
     // Hide experiment panels
     this.hideExperimentPanels();
 
-    this.uniqueMataProjectIds = [];
+    // Tag ids
+    this.uniqueMicroscopyMetaProjectIds = [];
+    this.uniqueFlowAnalysersMetaProjectIds = [];
+    this.uniqueFlowSortersMetaProjectIds = [];
 }
 
 /**
@@ -215,9 +218,11 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
  */
 DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
-    // Clear metaprojects map and IDs
+    // Clear metaprojects map and ids
     DATAMODEL.metaprojectsMap = {};
-    this.uniqueMataProjectIds = [];
+    this.uniqueMicroscopyMetaProjectIds = [];
+    this.uniqueFlowAnalysersMetaProjectIds = [];
+    this.uniqueFlowSortersMetaProjectIds = [];
 
     // Clean
     this.hideExperimentPanels();
@@ -398,31 +403,40 @@ DataViewer.prototype.clearFilters = function() {
  */
 DataViewer.prototype.displayFilters = function(metaprojectsMap, experimentType) {
 
+    // Keep track of the tags already shows for this experiment type
+    var uniqueMetaProjectIds;
+
     // Filters div
     var filterDiv;
     if (experimentType == "MICROSCOPY") {
         filterDiv = $("#filters_microscopy");
+        uniqueMetaProjectIds = this.uniqueMicroscopyMetaProjectIds;
     } else if (experimentType == "LSR_FORTESSA") {
         filterDiv = $("#filters_flow_analyzers");
+        uniqueMetaProjectIds = this.uniqueFlowAnalysersMetaProjectIds;
     } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
         filterDiv = $("#filters_flow_sorters");
+        uniqueMetaProjectIds = this.uniqueFlowSortersMetaProjectIds;
     } else {
         return;
     }
 
+
+    var cbDiv, lbDiv, inputObj;
     for (var prop in metaprojectsMap) {
 
         // Get metaproject's numeric ID in openBIS
         var id = metaprojectsMap[prop].id;
 
-        if ($.inArray(id, this.uniqueMataProjectIds) != -1) {
+        if ($.inArray(id, uniqueMetaProjectIds) != -1) {
             continue;
         }
-        this.uniqueMataProjectIds.push(id);
+        uniqueMetaProjectIds.push(id);
 
-        var cbDiv = $("<div>").addClass('checkbox-inline');
-        var lbDiv = $("<label />").text(metaprojectsMap[prop].name);
-        var inputObj = $("<input />")
+        // Add a filter (checkbox) for current tab
+        cbDiv = $("<div>").addClass('checkbox-inline');
+        lbDiv = $("<label />").text(metaprojectsMap[prop].name);
+        inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
             .click(function(){ DATAVIEWER.filterExperimentByTag(experimentType); })
@@ -432,6 +446,27 @@ DataViewer.prototype.displayFilters = function(metaprojectsMap, experimentType) 
         cbDiv.append(lbDiv);
         filterDiv.append(cbDiv);
 
+    }
+
+    if ($.inArray("no_tags", uniqueMetaProjectIds) == -1) {
+
+        // Add a filter for "no tags"
+        cbDiv = $("<div>").addClass('checkbox-inline');
+        lbDiv = $("<label />").text("No tags");
+        inputObj = $("<input />")
+            .attr("type", "checkbox")
+            .prop('checked', true)
+            .click(function () {
+                DATAVIEWER.filterExperimentByTag(experimentType);
+            })
+            .attr("id", "no_tags")
+            .attr("value", "na_tags");
+        lbDiv.append(inputObj);
+        cbDiv.append(lbDiv);
+        filterDiv.append(cbDiv);
+
+        // Add it to the list of already added tags
+        uniqueMetaProjectIds.push("no_tags");
     }
 
 };
