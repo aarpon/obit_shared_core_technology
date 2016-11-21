@@ -501,10 +501,29 @@ DataViewer.prototype.filterExperimentByTag = function(experimentType) {
         tagNames.push(tagCheckBoxes[i].id);
     }
 
-    // Go over all experiments
+    // Keep track of the "no_tags" filter
+    var indexNoTag = tagNames.indexOf("no_tags");
+
+    // Go over all experiments and filter by assigned tags
     for (var j = 0; j < experimentContainers.length; j++) {
 
+        // Retrieve the (real) tags for current experiment
         var tagsForExp = $(experimentContainers[j]).find("span");
+
+        if (tagsForExp.length == 0) {
+
+            if (indexNoTag != -1) {
+
+                if (tagChecked[indexNoTag] == true) {
+                    $(experimentContainers[j]).show();
+                } else {
+                    $(experimentContainers[j]).hide();
+                }
+
+                // Go to next experiment
+                continue;
+            }
+        }
 
         // If any of its tag is checked, we display it; otherwise
         // we hide it.
@@ -528,4 +547,5 @@ DataViewer.prototype.filterExperimentByTag = function(experimentType) {
 
         });
     }
+
 };
