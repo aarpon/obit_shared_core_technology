@@ -439,8 +439,10 @@ DataViewer.prototype.displayFilters = function(experimentType) {
         uniqueMetaProjectIds.push(id);
 
         // Add a filter (checkbox) for current tab
-        cbDiv = $("<div>").addClass('checkbox-inline');
-        lbDiv = $("<label />").text(metaprojectsMap[prop].name);
+        cbDiv = $("<div>")
+            .addClass('checkbox-inline')
+        lbDiv = $("<label />")
+            .text(metaprojectsMap[prop].name)
         inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)

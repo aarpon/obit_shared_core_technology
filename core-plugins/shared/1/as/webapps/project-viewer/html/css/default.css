@@ -31,18 +31,21 @@
 }
 
 #filters_microscopy {
-    margin: 5px 10px 5px 20px;
+    margin: 10px 10px 0px 20px;
     font-size: 10px;
+    line-height: 2.3em;
 }
 
 #filters_flow_analyzers {
-    margin: 5px 10px 5px 20px;
+    margin: 10px 10px 0px 20px;
     font-size: 10px;
+    line-height: 2.3em;
 }
 
 #filters_flow_sorters {
-    margin: 5px 10px 5px 20px;
+    margin: 10px 10px 0px 20px;
     font-size: 10px;
+    line-height: 2.3em;
 }
 
 #flow_analyzers {
