@@ -84,28 +84,34 @@
     margin-bottom: 9px;
 }
 
-.tag_header {
-    float: left;
-    margin-right: 10px;
+.tags {
     font-size: 10px;
     line-height: 2.3em;
     font-weight: bold;
+}
+
+.tag_header {
+    display: inline-block;
+    margin-right: 10px;
 }
 
 .tag_list {
-    float: left;
+    display: inline-block;
 }
 
-.machineName_header {
-    margin-right: 10px;
+.machineNames {
     font-size: 10px;
     line-height: 2.3em;
-    float: left;
     font-weight: bold;
 }
 
-.machineName_list {
+.machineName_header {
+    display: inline-block;
+    margin-right: 10px;
+}
 
+.machineName_list {
+    display: inline-block;
 }
 
 .tag {

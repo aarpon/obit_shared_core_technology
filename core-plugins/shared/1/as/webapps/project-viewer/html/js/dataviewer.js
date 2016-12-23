@@ -423,12 +423,14 @@ DataViewer.prototype.hideExperimentPanels = function() {
  */
 DataViewer.prototype.clearFilters = function() {
 
-    $("#filters_microscopy.tag_list").empty();
-    $("#filters_microscopy.machineName_list").empty();
-    $("#filters_flow_analyzers.tag_list").empty();
-    $("#filters_flow_analyzers.machineName_list").empty();
-    $("#filters_flow_sorters.tag_list").empty();
-    $("#filters_flow_sorters.machineName_list").empty();
+    $("#filters_microscopy").find("div.tag_list").empty();
+    $("#filters_microscopy").find("div.machineName_list").empty();
+
+    $("#filters_flow_analyzers").find("div.tag_list").empty();
+    $("#filters_flow_analyzers").find("div.machineName_list").empty();
+
+    $("#filters_flow_sorters").find("div.tag_list").empty();
+    $("#filters_flow_sorters").find("div.machineName_list").empty();
 };
 
 /**
@@ -459,14 +461,8 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         return;
     }
 
-    // Add a label to the row of tags
-    var tagDiv = $("<div>").attr("id", "tags");
-
-    // Add a label to the row of tags
-    tagDiv.append(
-        $("<div>")
-            .addClass("filter_label")
-            .html("Tags:"));
+    // Find the tag div
+    var tagDiv = filterDiv.find("div.tag_list");
 
     var cbDiv, lbDiv, inputObj;
     for (var prop in metaprojectsMap) {
@@ -517,7 +513,6 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         uniqueMetaProjectIds.push("no_tags");
     }
 
-    filterDiv.append(tagDiv);
 };
 
 /**
@@ -544,14 +539,8 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
         return;
     }
 
-    // Add a label to the row of tags
-    var machineNamesDiv = $("<div>").attr("id", "machineNames");
-
-    // Add a label to the row of tags
-    machineNamesDiv.append(
-        $("<div>")
-            .addClass("filter_label")
-            .html("Machines:"));
+    // Find the machine name div
+    var machineNamesDiv = filterDiv.find("div.machineName_list");
 
     var cbDiv, lbDiv, inputObj;
     for (var i = 0; i < uniqueMachineNames.length; i++) {
@@ -597,8 +586,6 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
         uniqueMachineNames.push("no_machine_names");
     }
 
-    filterDiv.append(machineNamesDiv);
-
 };
 
 /**
@@ -636,7 +623,7 @@ DataViewer.prototype.filterExperimentByTag = function(experimentType) {
     }
 
     // Get all tag checkboxes
-    var tagCheckBoxes = filterDiv.find("#tags").find(':checkbox');
+    var tagCheckBoxes = filterDiv.find("div.tag_list").find(':checkbox');
 
     var tagChecked = [];
     var tagNames = [];
@@ -715,7 +702,7 @@ DataViewer.prototype.filterExperimentByMachineName = function(experimentType) {
     }
 
     // Get all machine name checkboxes
-    var tagCheckBoxes = filterDiv.find("#machineNames").find(':checkbox');
+    var tagCheckBoxes = filterDiv.find("div.machineName_list").find(':checkbox');
 
     var machineNameChecked = [];
     var machineNames = [];
