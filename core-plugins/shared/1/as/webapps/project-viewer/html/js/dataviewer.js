@@ -378,7 +378,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             if (f == "") {
                 f = "Unknown";
             }
-            fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>.";
+            fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>";
             var fN = $("<div>").addClass("experiment_hostname").html(fS);
             experimentContainerDir.append(fN);
         }
@@ -635,11 +635,11 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
     // Keep track of the "no_machine_names" filter
     var indexNoMachineName = machineNames.indexOf("no_machine_names");
 
-    // Keep track of what is enable and what is disable to decide
-    // whether to show or hide the experiment.
-    var show = false;
-
     for (var j = 0; j < experimentContainers.length; j++) {
+
+        // Keep track of what is enable and what is disable to decide
+        // whether to show or hide the experiment.
+        var show = false;
 
         // Go over all experiments and filter by assigned tags
         var tagsForExp = $(experimentContainers[j])

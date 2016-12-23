@@ -91,12 +91,14 @@
 }
 
 .tag_header {
-    display: inline-block;
+    float: left;
     margin-right: 10px;
+    font-weight: bold;
 }
 
 .tag_list {
     display: inline-block;
+    line-height: 2.3em;
 }
 
 .machineNames {
@@ -106,8 +108,9 @@
 }
 
 .machineName_header {
-    display: inline-block;
+    float: left;
     margin-right: 10px;
+    font-weight: bold;
 }
 
 .machineName_list {
