@@ -373,16 +373,14 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             var q = $("<div>").addClass("experiment_description").html(d);
             experimentContainerDir.append(q);
 
-            // If the hostname friendly name is define, display it
-            var fS = "";
+            // Hostname friendly name
+            var fS;
             if (f == "") {
-                fS = "<i>Acquisition station name unknown.</i>"
-            } else {
-                fS = "Acquired on " + f + ".";
+                f = "Unknown";
             }
+            fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>.";
             var fN = $("<div>").addClass("experiment_hostname").html(fS);
             experimentContainerDir.append(fN);
-
         }
 
         // Show the panel group
@@ -637,7 +635,7 @@ DataViewer.prototype.filterExperimentByTag = function(experimentType) {
     for (var j = 0; j < experimentContainers.length; j++) {
 
         // Retrieve the (real) tags for current experiment
-        var tagsForExp = $(experimentContainers[j]).find(".experiment_tags").find("span");
+        var tagsForExp = $(experimentContainers[j]).find(".experiment_tags").find("span.tag");
 
         if (tagsForExp.length == 0) {
 
@@ -716,9 +714,9 @@ DataViewer.prototype.filterExperimentByMachineName = function(experimentType) {
     for (var j = 0; j < experimentContainers.length; j++) {
 
         // Retrieve the (real) tags for current experiment
-        var machineName = $(experimentContainers[j]).find(".experiment_hostname").text();
+        var machineName = $(experimentContainers[j]).find(".experiment_hostname").find("span.machineName").text();
 
-        if (machineName.localeCompare("Acquisition station name unknown.") == 0) {
+        if (machineName.localeCompare("Unknown") == 0) {
             if (machineNameChecked[indexNoMachineName] == true) {
                 $(experimentContainers[j]).show();
             } else {
@@ -727,18 +725,13 @@ DataViewer.prototype.filterExperimentByMachineName = function(experimentType) {
             continue;
         }
 
-        // Get the actual name
-        if (machineName.substring(0, 13).localeCompare("Acquired on ")) {
-            var name = machineName.substring(12, machineName.length - 1);
-
-            // Check if the machine is enabled
-            var index = machineNames.indexOf(name);
-            if (index != -1) {
-                if (machineNameChecked[index] == true) {
-                    $(experimentContainers[j]).show();
-                } else {
-                    $(experimentContainers[j]).hide();
-                }
+        // Check if the machine is enabled
+        var index = machineNames.indexOf(machineName);
+        if (index != -1) {
+            if (machineNameChecked[index] == true) {
+                $(experimentContainers[j]).show();
+            } else {
+                $(experimentContainers[j]).hide();
             }
         }
     }
