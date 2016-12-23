@@ -30,14 +30,6 @@
     margin-left: 5px;
 }
 
-.filter_label {
-    margin-right: 10px;
-    font-size: 10px;
-    line-height: 2.3em;
-    float: left;
-    font-weight: bold;
-}
-
 #filters_microscopy {
     margin: 10px 10px 0px 20px;
     font-size: 10px;
@@ -90,6 +82,30 @@
     padding-left: 10px;
     font-weight: normal;
     margin-bottom: 9px;
+}
+
+.tag_header {
+    float: left;
+    margin-right: 10px;
+    font-size: 10px;
+    line-height: 2.3em;
+    font-weight: bold;
+}
+
+.tag_list {
+    float: left;
+}
+
+.machineName_header {
+    margin-right: 10px;
+    font-size: 10px;
+    line-height: 2.3em;
+    float: left;
+    font-weight: bold;
+}
+
+.machineName_list {
+
 }
 
 .tag {

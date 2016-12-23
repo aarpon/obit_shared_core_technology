@@ -423,9 +423,12 @@ DataViewer.prototype.hideExperimentPanels = function() {
  */
 DataViewer.prototype.clearFilters = function() {
 
-    $("#filters_microscopy").empty();
-    $("#filters_flow_analyzers").empty();
-    $("#filters_flow_sorters").empty();
+    $("#filters_microscopy.tag_list").empty();
+    $("#filters_microscopy.machineName_list").empty();
+    $("#filters_flow_analyzers.tag_list").empty();
+    $("#filters_flow_analyzers.machineName_list").empty();
+    $("#filters_flow_sorters.tag_list").empty();
+    $("#filters_flow_sorters.machineName_list").empty();
 };
 
 /**
