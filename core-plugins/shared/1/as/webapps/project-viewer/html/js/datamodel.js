@@ -24,7 +24,7 @@ function DataModel() {
 
     // Create an OpenBIS facade to call JSON RPC services
     this.openbisServer = new openbis("/openbis");
-    
+
     // Reuse the current sessionId that we received in the context for
     // all the facade calls
     this.openbisServer.useSession(this.context.getSessionId());

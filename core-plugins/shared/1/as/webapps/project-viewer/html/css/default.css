@@ -30,6 +30,14 @@
     margin-left: 5px;
 }
 
+.filter_label {
+    margin-right: 10px;
+    font-size: 10px;
+    line-height: 2.3em;
+    float: left;
+    font-weight: bold;
+}
+
 #filters_microscopy {
     margin: 10px 10px 0px 20px;
     font-size: 10px;
