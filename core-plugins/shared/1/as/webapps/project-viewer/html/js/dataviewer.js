@@ -594,19 +594,6 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
  */
 DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) {
 
-    // Filter by experiment
-    this.filterExperimentByTag(experimentType);
-
-    // Filter by machine name
-    this.filterExperimentByMachineName(experimentType);
-
-};
-
-/**
- * Only show experiments for selected tags.
- */
-DataViewer.prototype.filterExperimentByTag = function(experimentType) {
-
     // Filters div
     var filterDiv, experimentContainers;
     if (experimentType == "MICROSCOPY") {
@@ -635,109 +622,84 @@ DataViewer.prototype.filterExperimentByTag = function(experimentType) {
     // Keep track of the "no_tags" filter
     var indexNoTag = tagNames.indexOf("no_tags");
 
-    // Go over all experiments and filter by assigned tags
+    // Get all machine name checkboxes
+    var machineNameCheckBoxes = filterDiv.find("div.machineName_list").find(':checkbox');
+
+    var machineNameChecked = [];
+    var machineNames = [];
+    for (var i = 0; i < machineNameCheckBoxes.length; i++) {
+        machineNameChecked.push(machineNameCheckBoxes[i].checked);
+        machineNames.push(machineNameCheckBoxes[i].id);
+    }
+
+    // Keep track of the "no_machine_names" filter
+    var indexNoMachineName = machineNames.indexOf("no_machine_names");
+
+    // Keep track of what is enable and what is disable to decide
+    // whether to show or hide the experiment.
+    var show = false;
+
     for (var j = 0; j < experimentContainers.length; j++) {
 
-        // Retrieve the (real) tags for current experiment
-        var tagsForExp = $(experimentContainers[j]).find(".experiment_tags").find("span.tag");
+        // Go over all experiments and filter by assigned tags
+        var tagsForExp = $(experimentContainers[j])
+            .find(".experiment_tags")
+            .find("span.tag");
 
         if (tagsForExp.length == 0) {
 
             if (indexNoTag != -1) {
 
                 if (tagChecked[indexNoTag] == true) {
-                    $(experimentContainers[j]).show();
-                } else {
-                    $(experimentContainers[j]).hide();
+                    show = true;
                 }
-
-                // Go to next experiment
-                continue;
             }
+        } else {
+
+            // If any of its tags is checked, we display it.
+            $(tagsForExp).each(function () {
+
+                var tagName = $(this).text();
+
+                var index = tagNames.indexOf(tagName);
+                if (index != -1) {
+                    if (tagChecked[index] == true) {
+                        show = true;
+                    }
+                }
+            });
         }
 
-        // If any of its tag is checked, we display it; otherwise
-        // we hide it.
-        var show = false;
-        $(tagsForExp).each(function() {
-
-            var tagName = $(this).text();
-
-            var index = tagNames.indexOf(tagName);
-            if (index != -1) {
-               if (tagChecked[index] == true) {
-                    show = true;
-               }
-            }
-
-            if (show == true) {
-                $(experimentContainers[j]).show();
-            } else {
-                $(experimentContainers[j]).hide();
-            }
-
-        });
-    }
-
-};
-
-/**
- * Only show experiments for selected machine names.
- */
-DataViewer.prototype.filterExperimentByMachineName = function(experimentType) {
-
-    // Filters div
-    var filterDiv, experimentContainers;
-    if (experimentType == "MICROSCOPY") {
-        filterDiv = $("#filters_microscopy");
-        experimentContainers = $("#microscopy .experiment_container");
-    } else if (experimentType == "LSR_FORTESSA") {
-        filterDiv = $("#filters_flow_analyzers");
-        experimentContainers = $("#flow_analyzers .experiment_container");
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
-        filterDiv = $("#filters_flow_sorters");
-        experimentContainers = $("#flow_sorters .experiment_container");
-    } else {
-        return;
-    }
-
-    // Get all machine name checkboxes
-    var tagCheckBoxes = filterDiv.find("div.machineName_list").find(':checkbox');
-
-    var machineNameChecked = [];
-    var machineNames = [];
-    for (var i = 0; i < tagCheckBoxes.length; i++) {
-        machineNameChecked.push(tagCheckBoxes[i].checked);
-        machineNames.push(tagCheckBoxes[i].id);
-    }
-
-    // Keep track of the "no_machine_names" filter
-    var indexNoMachineName = machineNames.indexOf("no_machine_names");
-
-    // Go over all experiments and filter by assigned tags
-    for (var j = 0; j < experimentContainers.length; j++) {
+        // Go over all experiments and filter by machine name
 
         // Retrieve the (real) tags for current experiment
-        var machineName = $(experimentContainers[j]).find(".experiment_hostname").find("span.machineName").text();
+        var machineName = $(experimentContainers[j])
+            .find(".experiment_hostname")
+            .find("span.machineName")
+            .text();
 
         if (machineName.localeCompare("Unknown") == 0) {
             if (machineNameChecked[indexNoMachineName] == true) {
-                $(experimentContainers[j]).show();
-            } else {
-                $(experimentContainers[j]).hide();
+                show = true;
             }
-            continue;
+        } else {
+
+            // Check if the machine is enabled
+            var index = machineNames.indexOf(machineName);
+            if (index != -1) {
+                if (machineNameChecked[index] == true) {
+                    show = true;
+                }
+            }
         }
 
-        // Check if the machine is enabled
-        var index = machineNames.indexOf(machineName);
-        if (index != -1) {
-            if (machineNameChecked[index] == true) {
-                $(experimentContainers[j]).show();
-            } else {
-                $(experimentContainers[j]).hide();
-            }
+        // Now we can finally show or hide the experiment
+        if (show == true) {
+            $(experimentContainers[j]).show();
+        } else {
+            $(experimentContainers[j]).hide();
         }
+
     }
 
 };
