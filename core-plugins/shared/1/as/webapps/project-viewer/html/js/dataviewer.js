@@ -484,7 +484,7 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
-            .click(function(){ DATAVIEWER.filterExperimentByTag(experimentType); })
+            .click(function(){ DATAVIEWER.filterExperimentByUserSelection(experimentType); })
             .attr("id", metaprojectsMap[prop].name)
             .attr("value", metaprojectsMap[prop].name);
         lbDiv.append(inputObj);
@@ -502,7 +502,7 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
             .attr("type", "checkbox")
             .prop('checked', true)
             .click(function () {
-                DATAVIEWER.filterExperimentByTag(experimentType);
+                DATAVIEWER.filterExperimentByUserSelection(experimentType);
             })
             .attr("id", "no_tags")
             .attr("value", "no_tags");
@@ -564,7 +564,7 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
         inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
-            .click(function(){ DATAVIEWER.filterExperimentByMachineName(experimentType); })
+            .click(function(){ DATAVIEWER.filterExperimentByUserSelection(experimentType); })
             .attr("id", machineName)
             .attr("value", machineName);
         lbDiv.append(inputObj);
@@ -582,7 +582,7 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
             .attr("type", "checkbox")
             .prop('checked', true)
             .click(function () {
-                DATAVIEWER.filterExperimentByMachineName(experimentType);
+                DATAVIEWER.filterExperimentByUserSelection(experimentType);
             })
             .attr("id", "no_machine_names")
             .attr("value", "no_machine_names");
@@ -595,6 +595,20 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
     }
 
     filterDiv.append(machineNamesDiv);
+
+};
+
+/**
+ * Filter experiment by tags and machine name.
+ * @param experimentType Type of the experiment.
+ */
+DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) {
+
+    // Filter by experiment
+    this.filterExperimentByTag(experimentType);
+
+    // Filter by machine name
+    this.filterExperimentByMachineName(experimentType);
 
 };
 
