@@ -548,24 +548,27 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
         // Get current machine name
         var machineName = uniqueMachineNames[i];
 
-        // Add a filter (checkbox) for current tab
-        cbDiv = $("<div>")
-            .addClass('checkbox-inline');
-        lbDiv = $("<label />")
-            .text(machineName);
-        inputObj = $("<input />")
-            .attr("type", "checkbox")
-            .prop('checked', true)
-            .click(function(){ DATAVIEWER.filterExperimentByUserSelection(experimentType); })
-            .attr("id", machineName)
-            .attr("value", machineName);
-        lbDiv.append(inputObj);
-        cbDiv.append(lbDiv);
-        machineNamesDiv.append(cbDiv);
-
+        if (machineName.localeCompare("Unknown") != 0) {
+            // Add a filter (checkbox) for current tab
+            cbDiv = $("<div>")
+                .addClass('checkbox-inline');
+            lbDiv = $("<label />")
+                .text(machineName);
+            inputObj = $("<input />")
+                .attr("type", "checkbox")
+                .prop('checked', true)
+                .click(function () {
+                    DATAVIEWER.filterExperimentByUserSelection(experimentType);
+                })
+                .attr("id", machineName)
+                .attr("value", machineName);
+            lbDiv.append(inputObj);
+            cbDiv.append(lbDiv);
+            machineNamesDiv.append(cbDiv);
+        }
     }
 
-    if ($.inArray("no_machine_names", uniqueMachineNames) == -1) {
+    if ($.inArray("Unknown", uniqueMachineNames) == -1) {
 
         // Add a filter for Unknown
         cbDiv = $("<div>").addClass('checkbox-inline');
@@ -576,14 +579,14 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
             .click(function () {
                 DATAVIEWER.filterExperimentByUserSelection(experimentType);
             })
-            .attr("id", "no_machine_names")
-            .attr("value", "no_machine_names");
+            .attr("id", "Unknown")
+            .attr("value", "Unknown");
         lbDiv.append(inputObj);
         cbDiv.append(lbDiv);
         machineNamesDiv.append(cbDiv);
 
         // Add it to the list of already added tags
-        uniqueMachineNames.push("no_machine_names");
+        uniqueMachineNames.push("Unknown");
     }
 
 };
@@ -632,8 +635,8 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
         machineNames.push(machineNameCheckBoxes[i].id);
     }
 
-    // Keep track of the "no_machine_names" filter
-    var indexNoMachineName = machineNames.indexOf("no_machine_names");
+    // Keep track of the "Unknonn" machine name.
+    var indexNoMachineName = machineNames.indexOf("Unknown");
 
     for (var j = 0; j < experimentContainers.length; j++) {
 
