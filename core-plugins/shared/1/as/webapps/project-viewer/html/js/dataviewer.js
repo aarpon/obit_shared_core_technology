@@ -19,6 +19,11 @@ function DataViewer() {
     this.uniqueMicroscopyMetaProjectIds = [];
     this.uniqueFlowAnalysersMetaProjectIds = [];
     this.uniqueFlowSortersMetaProjectIds = [];
+
+    // Machine names
+    this.uniqueMicroscopyMachineNames = [];
+    this.uniqueFlowAnalysersMachineNames = [];
+    this.uniqueFlowSortersMachineNames = [];
 }
 
 /**
@@ -218,13 +223,16 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
  */
 DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
-    // Clear metaprojects map and ids
+    // Clear metaprojects map and ids, and machine names
     DATAMODEL.microscopyMetaprojectsMap = {};
     DATAMODEL.flowAnalysersMetaprojectsMap = {};
     DATAMODEL.flowSortersMetaprojectsMap = {};
     this.uniqueMicroscopyMetaProjectIds = [];
     this.uniqueFlowAnalysersMetaProjectIds = [];
     this.uniqueFlowSortersMetaProjectIds = [];
+    this.uniqueMicroscopyMachineNames = [];
+    this.uniqueFlowAnalysersMachineNames = [];
+    this.uniqueFlowSortersMachineNames = [];
 
     // Clean
     this.hideExperimentPanels();
@@ -287,6 +295,21 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         return;
     }
 
+    // Machine names per type
+    var uniqueMachineNames;
+    if (experimentType == "LSR_FORTESSA") {
+        uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
+    }
+    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+        uniqueMachineNames = this.uniqueFlowSortersMachineNames;
+    }
+    else if (experimentType == "MICROSCOPY") {
+        uniqueMachineNames = this.uniqueMicroscopyMachineNames;
+    } else {
+
+        return;
+    }
+
     // Retrieve the experiments
     var experiments = project["experiments"];
 
@@ -311,6 +334,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             if (requested_experiments[i]["properties"][requested_exp_descr_property_hostname]) {
                 // This experiment has the hostname friendly name property associated to it
                 f = requested_experiments[i]["properties"][requested_exp_descr_property_hostname];
+            }
+
+            // Push the machine name if it is not in the map yet
+            if (f != "" && uniqueMachineNames.indexOf(f) == -1) {
+                uniqueMachineNames.push(f);
             }
 
             // Wrap an experiment in a div
@@ -345,16 +373,14 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             var q = $("<div>").addClass("experiment_description").html(d);
             experimentContainerDir.append(q);
 
-            // If the hostname friendly name is define, display it
-            var fS = "";
+            // Hostname friendly name
+            var fS;
             if (f == "") {
-                fS = "<i>Acquisition station name unknown.</i>"
-            } else {
-                fS = "Acquired on " + f + ".";
+                f = "Unknown";
             }
+            fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>";
             var fN = $("<div>").addClass("experiment_hostname").html(fS);
             experimentContainerDir.append(fN);
-
         }
 
         // Show the panel group
@@ -362,8 +388,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     }
 
-    // Display the filters
-    this.displayFilters(experimentType);
+    // Display the tag filters
+    this.displayTagFilters(experimentType);
+
+    // Display the machine name filters
+    this.displayMachineNameFilters(experimentType);
 
 };
 
@@ -394,16 +423,21 @@ DataViewer.prototype.hideExperimentPanels = function() {
  */
 DataViewer.prototype.clearFilters = function() {
 
-    $("#filters_microscopy").empty();
-    $("#filters_flow_analyzers").empty();
-    $("#filters_flow_sorters").empty();
+    $("#filters_microscopy").find("div.tag_list").empty();
+    $("#filters_microscopy").find("div.machineName_list").empty();
+
+    $("#filters_flow_analyzers").find("div.tag_list").empty();
+    $("#filters_flow_analyzers").find("div.machineName_list").empty();
+
+    $("#filters_flow_sorters").find("div.tag_list").empty();
+    $("#filters_flow_sorters").find("div.machineName_list").empty();
 };
 
 /**
  * Display filters for current project.
  * @param experimentType Type of the experiment.
  */
-DataViewer.prototype.displayFilters = function(experimentType) {
+DataViewer.prototype.displayTagFilters = function(experimentType) {
 
     // Keep track of the tags already shows for this experiment type
     var uniqueMetaProjectIds;
@@ -427,6 +461,9 @@ DataViewer.prototype.displayFilters = function(experimentType) {
         return;
     }
 
+    // Find the tag div
+    var tagDiv = filterDiv.find("div.tag_list");
+
     var cbDiv, lbDiv, inputObj;
     for (var prop in metaprojectsMap) {
 
@@ -438,20 +475,20 @@ DataViewer.prototype.displayFilters = function(experimentType) {
         }
         uniqueMetaProjectIds.push(id);
 
-        // Add a filter (checkbox) for current tab
+        // Add a filter (checkbox) for current tag
         cbDiv = $("<div>")
-            .addClass('checkbox-inline')
+            .addClass('checkbox-inline');
         lbDiv = $("<label />")
-            .text(metaprojectsMap[prop].name)
+            .text(metaprojectsMap[prop].name);
         inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
-            .click(function(){ DATAVIEWER.filterExperimentByTag(experimentType); })
+            .click(function(){ DATAVIEWER.filterExperimentByUserSelection(experimentType); })
             .attr("id", metaprojectsMap[prop].name)
             .attr("value", metaprojectsMap[prop].name);
         lbDiv.append(inputObj);
         cbDiv.append(lbDiv);
-        filterDiv.append(cbDiv);
+        tagDiv.append(cbDiv);
 
     }
 
@@ -464,13 +501,13 @@ DataViewer.prototype.displayFilters = function(experimentType) {
             .attr("type", "checkbox")
             .prop('checked', true)
             .click(function () {
-                DATAVIEWER.filterExperimentByTag(experimentType);
+                DATAVIEWER.filterExperimentByUserSelection(experimentType);
             })
             .attr("id", "no_tags")
-            .attr("value", "na_tags");
+            .attr("value", "no_tags");
         lbDiv.append(inputObj);
         cbDiv.append(lbDiv);
-        filterDiv.append(cbDiv);
+        tagDiv.append(cbDiv);
 
         // Add it to the list of already added tags
         uniqueMetaProjectIds.push("no_tags");
@@ -479,9 +516,86 @@ DataViewer.prototype.displayFilters = function(experimentType) {
 };
 
 /**
- * Only show experiments for selected tas.
+ * Display machine names for current project.
+ * @param experimentType Type of the experiment.
  */
-DataViewer.prototype.filterExperimentByTag = function(experimentType) {
+DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
+
+    // Keep track of the tags already shows for this experiment type
+    var uniqueMachineNames;
+
+    // Filters div
+    var filterDiv;
+    if (experimentType == "MICROSCOPY") {
+        filterDiv = $("#filters_microscopy");
+        uniqueMachineNames = this.uniqueMicroscopyMachineNames;
+    } else if (experimentType == "LSR_FORTESSA") {
+        filterDiv = $("#filters_flow_analyzers");
+        uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+        filterDiv = $("#filters_flow_sorters");
+        uniqueMachineNames = this.uniqueFlowSortersMachineNames;
+    } else {
+        return;
+    }
+
+    // Find the machine name div
+    var machineNamesDiv = filterDiv.find("div.machineName_list");
+
+    var cbDiv, lbDiv, inputObj;
+    for (var i = 0; i < uniqueMachineNames.length; i++) {
+
+        // Get current machine name
+        var machineName = uniqueMachineNames[i];
+
+        if (machineName.localeCompare("Unknown") != 0) {
+            // Add a filter (checkbox) for current tab
+            cbDiv = $("<div>")
+                .addClass('checkbox-inline');
+            lbDiv = $("<label />")
+                .text(machineName);
+            inputObj = $("<input />")
+                .attr("type", "checkbox")
+                .prop('checked', true)
+                .click(function () {
+                    DATAVIEWER.filterExperimentByUserSelection(experimentType);
+                })
+                .attr("id", machineName)
+                .attr("value", machineName);
+            lbDiv.append(inputObj);
+            cbDiv.append(lbDiv);
+            machineNamesDiv.append(cbDiv);
+        }
+    }
+
+    if ($.inArray("Unknown", uniqueMachineNames) == -1) {
+
+        // Add a filter for Unknown
+        cbDiv = $("<div>").addClass('checkbox-inline');
+        lbDiv = $("<label />").text("Unknown");
+        inputObj = $("<input />")
+            .attr("type", "checkbox")
+            .prop('checked', true)
+            .click(function () {
+                DATAVIEWER.filterExperimentByUserSelection(experimentType);
+            })
+            .attr("id", "Unknown")
+            .attr("value", "Unknown");
+        lbDiv.append(inputObj);
+        cbDiv.append(lbDiv);
+        machineNamesDiv.append(cbDiv);
+
+        // Add it to the list of already added tags
+        uniqueMachineNames.push("Unknown");
+    }
+
+};
+
+/**
+ * Filter experiment by tags and machine name.
+ * @param experimentType Type of the experiment.
+ */
+DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) {
 
     // Filters div
     var filterDiv, experimentContainers;
@@ -499,7 +613,7 @@ DataViewer.prototype.filterExperimentByTag = function(experimentType) {
     }
 
     // Get all tag checkboxes
-    var tagCheckBoxes = filterDiv.find(':checkbox');
+    var tagCheckBoxes = filterDiv.find("div.tag_list").find(':checkbox');
 
     var tagChecked = [];
     var tagNames = [];
@@ -511,48 +625,84 @@ DataViewer.prototype.filterExperimentByTag = function(experimentType) {
     // Keep track of the "no_tags" filter
     var indexNoTag = tagNames.indexOf("no_tags");
 
-    // Go over all experiments and filter by assigned tags
+    // Get all machine name checkboxes
+    var machineNameCheckBoxes = filterDiv.find("div.machineName_list").find(':checkbox');
+
+    var machineNameChecked = [];
+    var machineNames = [];
+    for (var i = 0; i < machineNameCheckBoxes.length; i++) {
+        machineNameChecked.push(machineNameCheckBoxes[i].checked);
+        machineNames.push(machineNameCheckBoxes[i].id);
+    }
+
+    // Keep track of the "Unknonn" machine name.
+    var indexNoMachineName = machineNames.indexOf("Unknown");
+
     for (var j = 0; j < experimentContainers.length; j++) {
 
-        // Retrieve the (real) tags for current experiment
-        var tagsForExp = $(experimentContainers[j]).find("span");
+        // Keep track of what is enable and what is disable to decide
+        // whether to show or hide the experiment.
+        var show = false;
+
+        // Go over all experiments and filter by assigned tags
+        var tagsForExp = $(experimentContainers[j])
+            .find(".experiment_tags")
+            .find("span.tag");
 
         if (tagsForExp.length == 0) {
 
             if (indexNoTag != -1) {
 
                 if (tagChecked[indexNoTag] == true) {
-                    $(experimentContainers[j]).show();
-                } else {
-                    $(experimentContainers[j]).hide();
+                    show = true;
                 }
+            }
+        } else {
 
-                // Go to next experiment
-                continue;
+            // If any of its tags is checked, we display it.
+            $(tagsForExp).each(function () {
+
+                var tagName = $(this).text();
+
+                var index = tagNames.indexOf(tagName);
+                if (index != -1) {
+                    if (tagChecked[index] == true) {
+                        show = true;
+                    }
+                }
+            });
+        }
+
+        // Go over all experiments and filter by machine name
+
+        // Retrieve the (real) tags for current experiment
+        var machineName = $(experimentContainers[j])
+            .find(".experiment_hostname")
+            .find("span.machineName")
+            .text();
+
+        if (machineName.localeCompare("Unknown") == 0) {
+            if (machineNameChecked[indexNoMachineName] == true) {
+                show = true;
+            }
+        } else {
+
+            // Check if the machine is enabled
+            var index = machineNames.indexOf(machineName);
+            if (index != -1) {
+                if (machineNameChecked[index] == true) {
+                    show = true;
+                }
             }
         }
 
-        // If any of its tag is checked, we display it; otherwise
-        // we hide it.
-        var show = false;
-        $(tagsForExp).each(function() {
+        // Now we can finally show or hide the experiment
+        if (show == true) {
+            $(experimentContainers[j]).show();
+        } else {
+            $(experimentContainers[j]).hide();
+        }
 
-            var tagName = $(this).text();
-
-            var index = tagNames.indexOf(tagName);
-            if (index != -1) {
-               if (tagChecked[index] == true) {
-                    show = true;
-               }
-            }
-
-            if (show == true) {
-                $(experimentContainers[j]).show();
-            } else {
-                $(experimentContainers[j]).hide();
-            }
-
-        });
     }
 
 };
