@@ -94,6 +94,7 @@
     float: left;
     margin-right: 10px;
     font-weight: bold;
+    text-decoration: underline;
 }
 
 .tag_list {
@@ -111,6 +112,7 @@
     float: left;
     margin-right: 10px;
     font-weight: bold;
+    text-decoration: underline;
 }
 
 .machineName_list {
