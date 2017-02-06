@@ -237,7 +237,6 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
     // Clean
     this.hideExperimentPanels();
     this.cleanExperiments();
-    this.clearFilters();
 
     // Check whether the experiment data for current project was already
     // retrieved
@@ -316,11 +315,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     // Get the requested experiments
     var requested_experiments = experiments[experimentType];
     var requested_exp_property_name = experimentType + "_EXPERIMENT_NAME";
-    var requested_exp_descr_property_name =  experimentType + "_EXPERIMENT_DESCRIPTION";
-    var requested_exp_descr_property_hostname =  experimentType + "_EXPERIMENT_ACQ_HARDWARE_FRIENDLY_NAME";
+    var requested_exp_descr_property_name = experimentType + "_EXPERIMENT_DESCRIPTION";
+    var requested_exp_descr_property_hostname = experimentType + "_EXPERIMENT_ACQ_HARDWARE_FRIENDLY_NAME";
 
     // Add a title
-    var nExp =  requested_experiments.length;
+    var nExp = requested_experiments.length;
     if (nExp > 0) {
 
         // Display experiments
@@ -398,7 +397,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
 /**
  * Clean the experiment lists.
-  */
+ */
 DataViewer.prototype.cleanExperiments = function() {
 
     $("#flow_analyzers_panel_body").empty();
@@ -416,21 +415,6 @@ DataViewer.prototype.hideExperimentPanels = function() {
     $("#flow_sorters").hide();
     $("#microscopy").hide();
 
-};
-
-/**
- * Clear filters.
- */
-DataViewer.prototype.clearFilters = function() {
-
-    $("#filters_microscopy").find("div.tag_list").empty();
-    $("#filters_microscopy").find("div.machineName_list").empty();
-
-    $("#filters_flow_analyzers").find("div.tag_list").empty();
-    $("#filters_flow_analyzers").find("div.machineName_list").empty();
-
-    $("#filters_flow_sorters").find("div.tag_list").empty();
-    $("#filters_flow_sorters").find("div.machineName_list").empty();
 };
 
 /**
@@ -461,8 +445,9 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         return;
     }
 
-    // Find the tag div
+    // Find the tag div and clear it
     var tagDiv = filterDiv.find("div.tag_list");
+    tagDiv.empty();
 
     var cbDiv, lbDiv, inputObj;
     for (var prop in metaprojectsMap) {
@@ -470,10 +455,9 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         // Get metaproject's numeric ID in openBIS
         var id = metaprojectsMap[prop].id;
 
-        if ($.inArray(id, uniqueMetaProjectIds) != -1) {
-            continue;
+        if ($.inArray(id, uniqueMetaProjectIds) == -1) {
+            uniqueMetaProjectIds.push(id);
         }
-        uniqueMetaProjectIds.push(id);
 
         // Add a filter (checkbox) for current tag
         cbDiv = $("<div>")
@@ -483,7 +467,9 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
-            .click(function(){ DATAVIEWER.filterExperimentByUserSelection(experimentType); })
+            .click(function () {
+                DATAVIEWER.filterExperimentByUserSelection(experimentType);
+            })
             .attr("id", metaprojectsMap[prop].name)
             .attr("value", metaprojectsMap[prop].name);
         lbDiv.append(inputObj);
@@ -492,26 +478,23 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
 
     }
 
-    if ($.inArray("no_tags", uniqueMetaProjectIds) == -1) {
+    // Add a filter for "no tags"
+    cbDiv = $("<div>").addClass('checkbox-inline');
+    lbDiv = $("<label />").text("No tags");
+    inputObj = $("<input />")
+        .attr("type", "checkbox")
+        .prop('checked', true)
+        .click(function () {
+            DATAVIEWER.filterExperimentByUserSelection(experimentType);
+        })
+        .attr("id", "no_tags")
+        .attr("value", "no_tags");
+    lbDiv.append(inputObj);
+    cbDiv.append(lbDiv);
+    tagDiv.append(cbDiv);
 
-        // Add a filter for "no tags"
-        cbDiv = $("<div>").addClass('checkbox-inline');
-        lbDiv = $("<label />").text("No tags");
-        inputObj = $("<input />")
-            .attr("type", "checkbox")
-            .prop('checked', true)
-            .click(function () {
-                DATAVIEWER.filterExperimentByUserSelection(experimentType);
-            })
-            .attr("id", "no_tags")
-            .attr("value", "no_tags");
-        lbDiv.append(inputObj);
-        cbDiv.append(lbDiv);
-        tagDiv.append(cbDiv);
-
-        // Add it to the list of already added tags
-        uniqueMetaProjectIds.push("no_tags");
-    }
+    // Add it to the list of already added tags
+    uniqueMetaProjectIds.push("no_tags");
 
 };
 
@@ -539,8 +522,9 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
         return;
     }
 
-    // Find the machine name div
+    // Find the machine name div and empty it
     var machineNamesDiv = filterDiv.find("div.machineName_list");
+    machineNamesDiv.empty();
 
     var cbDiv, lbDiv, inputObj;
     for (var i = 0; i < uniqueMachineNames.length; i++) {
@@ -568,26 +552,23 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
         }
     }
 
-    if ($.inArray("Unknown", uniqueMachineNames) == -1) {
+    // Add a filter for Unknown
+    cbDiv = $("<div>").addClass('checkbox-inline');
+    lbDiv = $("<label />").text("Unknown");
+    inputObj = $("<input />")
+        .attr("type", "checkbox")
+        .prop('checked', true)
+        .click(function () {
+            DATAVIEWER.filterExperimentByUserSelection(experimentType);
+        })
+        .attr("id", "Unknown")
+        .attr("value", "Unknown");
+    lbDiv.append(inputObj);
+    cbDiv.append(lbDiv);
+    machineNamesDiv.append(cbDiv);
 
-        // Add a filter for Unknown
-        cbDiv = $("<div>").addClass('checkbox-inline');
-        lbDiv = $("<label />").text("Unknown");
-        inputObj = $("<input />")
-            .attr("type", "checkbox")
-            .prop('checked', true)
-            .click(function () {
-                DATAVIEWER.filterExperimentByUserSelection(experimentType);
-            })
-            .attr("id", "Unknown")
-            .attr("value", "Unknown");
-        lbDiv.append(inputObj);
-        cbDiv.append(lbDiv);
-        machineNamesDiv.append(cbDiv);
-
-        // Add it to the list of already added tags
-        uniqueMachineNames.push("Unknown");
-    }
+    // Add it to the list of already added tags
+    uniqueMachineNames.push("Unknown");
 
 };
 
