@@ -532,24 +532,22 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
         // Get current machine name
         var machineName = uniqueMachineNames[i];
 
-        if (machineName.localeCompare("Unknown") != 0) {
-            // Add a filter (checkbox) for current tab
-            cbDiv = $("<div>")
-                .addClass('checkbox-inline');
-            lbDiv = $("<label />")
-                .text(machineName);
-            inputObj = $("<input />")
-                .attr("type", "checkbox")
-                .prop('checked', true)
-                .click(function () {
-                    DATAVIEWER.filterExperimentByUserSelection(experimentType);
-                })
-                .attr("id", machineName)
-                .attr("value", machineName);
-            lbDiv.append(inputObj);
-            cbDiv.append(lbDiv);
-            machineNamesDiv.append(cbDiv);
-        }
+        // Add a filter (checkbox) for current tab
+        cbDiv = $("<div>")
+            .addClass('checkbox-inline');
+        lbDiv = $("<label />")
+            .text(machineName);
+        inputObj = $("<input />")
+            .attr("type", "checkbox")
+            .prop('checked', true)
+            .click(function () {
+                DATAVIEWER.filterExperimentByUserSelection(experimentType);
+            })
+            .attr("id", machineName)
+            .attr("value", machineName);
+        lbDiv.append(inputObj);
+        cbDiv.append(lbDiv);
+        machineNamesDiv.append(cbDiv);
     }
 
     // Add a filter for Unknown
@@ -566,9 +564,6 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
     lbDiv.append(inputObj);
     cbDiv.append(lbDiv);
     machineNamesDiv.append(cbDiv);
-
-    // Add it to the list of already added tags
-    uniqueMachineNames.push("Unknown");
 
 };
 
