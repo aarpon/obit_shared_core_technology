@@ -192,7 +192,8 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 
     var section = "";
 
-    if (experiment_type == "LSR_FORTESSA" || experiment_type == "FACS_ARIA" || experiment_type == "INFLUX") {
+    if (experiment_type == "LSR_FORTESSA" || experiment_type == "FACS_ARIA" ||
+        experiment_type == "INFLUX" || experiment_type == "S3E") {
 
         section = "webapp-section_bdfacsdiva-viewer";
 
@@ -251,6 +252,7 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
         this.displayExperiments(project, "LSR_FORTESSA");
         this.displayExperiments(project, "FACS_ARIA");
         this.displayExperiments(project, "INFLUX");
+        this.displayExperiments(project, "S3E");
         this.displayExperiments(project, "MICROSCOPY");
     }
 };
@@ -264,7 +266,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Check!
     if (experimentType != "LSR_FORTESSA" && experimentType != "FACS_ARIA" &&
-        experimentType != "INFLUX" && experimentType != "MICROSCOPY") {
+        experimentType != "INFLUX" && experimentType != "MICROSCOPY" && experimentType != "S3E") {
 
         DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
         return;
@@ -282,7 +284,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         experimentTypePanelGroupDiv = $("#flow_analyzers");
         experimentTypePanelBodyDiv = $("#flow_analyzers_panel_body");
     }
-    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
         experimentTypePanelGroupDiv = $("#flow_sorters");
         experimentTypePanelBodyDiv = $("#flow_sorters_panel_body");
     }
@@ -299,7 +301,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     if (experimentType == "LSR_FORTESSA") {
         uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
     }
-    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
         uniqueMachineNames = this.uniqueFlowSortersMachineNames;
     }
     else if (experimentType == "MICROSCOPY") {
@@ -437,7 +439,7 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         filterDiv = $("#filters_flow_analyzers");
         uniqueMetaProjectIds = this.uniqueFlowAnalysersMetaProjectIds;
         metaprojectsMap = DATAMODEL.flowAnalysersMetaprojectsMap;
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
         filterDiv = $("#filters_flow_sorters");
         uniqueMetaProjectIds = this.uniqueFlowSortersMetaProjectIds;
         metaprojectsMap = DATAMODEL.flowSortersMetaprojectsMap;
@@ -515,7 +517,7 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
     } else if (experimentType == "LSR_FORTESSA") {
         filterDiv = $("#filters_flow_analyzers");
         uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
         filterDiv = $("#filters_flow_sorters");
         uniqueMachineNames = this.uniqueFlowSortersMachineNames;
     } else {
@@ -581,7 +583,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
     } else if (experimentType == "LSR_FORTESSA") {
         filterDiv = $("#filters_flow_analyzers");
         experimentContainers = $("#flow_analyzers .experiment_container");
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
         filterDiv = $("#filters_flow_sorters");
         experimentContainers = $("#flow_sorters .experiment_container");
     } else {

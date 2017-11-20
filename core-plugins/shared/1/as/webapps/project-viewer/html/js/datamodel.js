@@ -79,7 +79,7 @@ DataModel.prototype.resolveMetaproject = function(metaproject, experimentType) {
         metaprojectsMap = this.microscopyMetaprojectsMap;
     } else if (experimentType == "LSR_FORTESSA") {
         metaprojectsMap = this.flowAnalysersMetaprojectsMap;
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX") {
+    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
         metaprojectsMap = this.flowSortersMetaprojectsMap;
     } else {
         return;
@@ -202,6 +202,21 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
 
                 project["experiments"]["INFLUX"] = response.result;
                 DATAVIEWER.displayExperiments(project, "INFLUX");
+
+            }
+        });
+
+    // Retrieve the S3E_EXPERIMENT information for current project
+    this.openbisServer.listExperiments([project["project"]],
+        "S3E_EXPERIMENT", function(response) {
+
+            if (response.error) {
+                // The experiment type INFLUX_EXPERIMENT is not registered.
+                // We ignore it.
+            } else {
+
+                project["experiments"]["S3E"] = response.result;
+                DATAVIEWER.displayExperiments(project, "S3E");
 
             }
         });
