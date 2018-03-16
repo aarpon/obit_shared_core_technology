@@ -320,9 +320,28 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     var requested_exp_descr_property_name = experimentType + "_EXPERIMENT_DESCRIPTION";
     var requested_exp_descr_property_hostname = experimentType + "_EXPERIMENT_ACQ_HARDWARE_FRIENDLY_NAME";
 
+    // Sorting
+    var requested_sorting_option = $('input[name=sort_option]:checked', '#exp_sorting_form').val();
+
     // Add a title
     var nExp = requested_experiments.length;
     if (nExp > 0) {
+
+        if (requested_sorting_option === "1") {
+            // Sort them by experiment name (ascending)
+            requested_experiments.sort(function(a, b) {
+                var textA = a["properties"][requested_exp_property_name].toUpperCase();
+                var textB = b["properties"][requested_exp_property_name].toUpperCase();
+                return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+            });
+        } else {
+            // Sort them by registration date name (descending)
+            requested_experiments.sort(function(a, b) {
+                var dateA = a["registrationDetails"]["registrationDate"];
+                var dateB = b["registrationDetails"]["registrationDate"];
+                return (dateB < dateA) ? -1 : (dateB > dateA) ? 1 : 0;
+            });
+        }
 
         // Display experiments
         for (var i = 0; i < requested_experiments.length; i++) {
