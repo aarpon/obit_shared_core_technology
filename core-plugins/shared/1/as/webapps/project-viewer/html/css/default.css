@@ -59,6 +59,14 @@
 }
 
 #exp_sorting {
+    font-size: 11px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+input[type="radio"] {
+    margin-top: 0px;
+    vertical-align: middle;
 }
 
 #microscopy {
