@@ -37,43 +37,26 @@ function DataModel() {
     this.flowAnalysersMetaprojectsMap = {};
     this.flowSortersMetaprojectsMap = {};
 
-    // All metaprojects
-    this.metaprojects = {};
-
-    // Retrieve the metaprojects
-    this.openbisServer.listMetaprojects(function(response) {
-
-        // Store the metaprojects on success
+    // Retrieve all projects
+    this.openbisServer.listProjects(function(response) {
         if (response.error) {
-            DATAMODEL.metaprojects = {};
-        } else if (response.result) {
-            DATAMODEL.metaprojects = response.result;
-        } else {
-            DATAMODEL.metaprojects = {};
-        }
 
-        // Retrieve all projects
-        DATAMODEL.openbisServer.listProjects(function(response) {
-            if (response.error) {
+            // Make sure that the data property is empty
+            DATAMODEL.data = [];
 
-                // Make sure that the data property is empty
-                DATAMODEL.data = [];
-
-                // Report the error
-                if (DATAMODEL.openbisServer.getSession() == null) {
-                    DATAVIEWER.displayStatus("Your session has expired. Please log in to openBIS and try again.", "error");
-                } else {
-                    DATAVIEWER.displayStatus("Could not retrieve the list of projects!", "error");
-                }
-
+            // Report the error
+            if (DATAMODEL.openbisServer.getSession() == null) {
+                DATAVIEWER.displayStatus("Your session has expired. Please log in to openBIS and try again.", "error");
             } else {
-
-                // Build the data structure
-                DATAMODEL.initDataStructure(response.result);
-
+                DATAVIEWER.displayStatus("Could not retrieve the list of projects!", "error");
             }
-        })
 
+        } else {
+
+            // Build the data structure
+            DATAMODEL.initDataStructure(response.result);
+
+        }
     });
 
 }
@@ -81,8 +64,7 @@ function DataModel() {
 /**
  * Resolve a metaproject when a reference is passed
  */
-DataModel.prototype.resolveMetaproject = function(expMetaprojects, experimentType) {
-
+DataModel.prototype.resolveMetaproject = function(expMetaprojects, experiments, experimentType) {
 
     // If no metaprojects, return the empty object and stop here
     if (expMetaprojects.length === 0) {
@@ -103,7 +85,6 @@ DataModel.prototype.resolveMetaproject = function(expMetaprojects, experimentTyp
         return;
     }
 
-
     // Process all metaprojects
     for (var i = 0; i < expMetaprojects.length; i++) {
 
@@ -120,8 +101,9 @@ DataModel.prototype.resolveMetaproject = function(expMetaprojects, experimentTyp
         // If id (reference), retrieve stored metaproject and replace the id
         if (typeof(expMetaprojects[i]) === "number") {
 
-            // Replace the ID reference with the object it points to
-            var mp = this.metaProjectFromID(expMetaprojects[i]);
+            // We need to find the other experiment metaproject that has an @id corresponding
+            // to this integer points.
+            var mp = this.metaProjectFromID(expMetaprojects[i], experiments);
 
             if (mp !== null) {
 
@@ -129,10 +111,10 @@ DataModel.prototype.resolveMetaproject = function(expMetaprojects, experimentTyp
                 expMetaprojects[i] = mp;
                 metaprojectsMap[mp['id']] = mp;
 
+
             } else {
 
-                console.log("Error! An experiment metaproject with id = " + expMetaprojects[i] +
-                    " does not have a match in the global list of metaprojects!");
+                console.log("Error! Could not find a match for metaproject with @id = " + expMetaprojects[i] + "!");
             }
 
             // Go to the next metaproject
@@ -147,15 +129,18 @@ DataModel.prototype.resolveMetaproject = function(expMetaprojects, experimentTyp
 
 };
 
-DataModel.prototype.metaProjectFromID = function(id) {
+DataModel.prototype.metaProjectFromID = function(id, experiments) {
 
-    if (this.metaprojects.length === 0) {
-        return null;
-    }
+    for (var i = 0; i < experiments.length; i++) {
 
-    for (var i = 0; i < this.metaprojects.length; i++) {
-        if (this.metaprojects[i]['id'] === parseInt(id))
-            return this.metaprojects[i];
+        for (var j = 0; j < experiments[i].metaprojects.length; j++) {
+
+            if (typeof(experiments[i].metaprojects[j]) !== "number") {
+                if (experiments[i].metaprojects[j]['@id'] === id) {
+                    return experiments[i].metaprojects[j];
+                }
+            }
+        }
     }
 
     return null;
