@@ -61,16 +61,26 @@
                     <form id="exp_sorting_form"
                           title="Re-select the project after changing the sorting option.">
                         Sort:&nbsp;&nbsp;<label class="radio-inline">
-                            <input type="radio"
-                                   name="sort_option"
-                                   value="1"
-                                   checked="checked">By name (ascending)
-                        </label>
+                        <input type="radio"
+                               name="sort_option"
+                               value="1"
+                               checked="checked">
+                            By name (ascending)</label>
                         <label class="radio-inline">
                             <input type="radio"
                                    name="sort_option"
-                                   value="2">By registration date (most recent first)
-                        </label>
+                                   value="2">
+                            By name (descending)</label>
+                        <label class="radio-inline">
+                            <input type="radio"
+                                   name="sort_option"
+                                   value="3">
+                            By registration date (newest first)</label>
+                        <label class="radio-inline">
+                            <input type="radio"
+                                   name="sort_option"
+                                   value="4">
+                            By registration date (oldest first)</label>
                     </form>
                 </div>
 
@@ -206,6 +216,11 @@
         /* Initialize global objects */
         window.DATAVIEWER = new DataViewer();
         window.DATAMODEL = new DataModel();
+
+        /* Attach callback to sorting radio buttons */
+        $("#exp_sorting_form").on("change", "[name=sort_option]", function() {
+            DATAVIEWER.reDisplayAllExperimentsForProject(window.DATAVIEWER.currentProject);
+        });
 
     });
 

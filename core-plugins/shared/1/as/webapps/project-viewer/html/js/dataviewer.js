@@ -24,6 +24,10 @@ function DataViewer() {
     this.uniqueMicroscopyMachineNames = [];
     this.uniqueFlowAnalysersMachineNames = [];
     this.uniqueFlowSortersMachineNames = [];
+
+
+    // Keep track of currently selected projects
+    this.currentProject = null;
 }
 
 /**
@@ -248,13 +252,35 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
     } else {
 
-        // If the experiment data was already available, we display it.
+        // If the experiment data is already available, we display it.
         this.displayExperiments(project, "LSR_FORTESSA");
         this.displayExperiments(project, "FACS_ARIA");
         this.displayExperiments(project, "INFLUX");
         this.displayExperiments(project, "S3E");
         this.displayExperiments(project, "MICROSCOPY");
     }
+
+    // Store project as currently active one
+    this.currentProject = project;
+
+};
+
+/**
+ * (Re)display all data for project.
+ * @param project Project object.
+ */
+DataViewer.prototype.reDisplayAllExperimentsForProject = function(project) {
+
+    // Clean
+    this.hideExperimentPanels();
+    this.cleanExperiments();
+
+    // If the experiment data is already available, we display it.
+    this.displayExperiments(project, "LSR_FORTESSA");
+    this.displayExperiments(project, "FACS_ARIA");
+    this.displayExperiments(project, "INFLUX");
+    this.displayExperiments(project, "S3E");
+    this.displayExperiments(project, "MICROSCOPY");
 };
 
 /**
@@ -264,9 +290,16 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
  */
 DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
+    // Do nothing if the project is not set. It can happen if some
+    // callbacks (like experiment sorting) are triggered.
+    if (project == null) {
+        return;
+    }
+
     // Check!
     if (experimentType !== "LSR_FORTESSA" && experimentType !== "FACS_ARIA" &&
-        experimentType !== "INFLUX" && experimentType !== "MICROSCOPY" && experimentType !== "S3E") {
+        experimentType !== "INFLUX" && experimentType !== "MICROSCOPY" &&
+        experimentType !== "S3E") {
 
         DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
         return;
@@ -334,12 +367,26 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 var textB = b["properties"][requested_exp_property_name].toUpperCase();
                 return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
             });
-        } else {
-            // Sort them by registration date name (descending)
+        } else if (requested_sorting_option === "2") {
+            // Sort them by experiment name (descending)
+            requested_experiments.sort(function(a, b) {
+                var textA = a["properties"][requested_exp_property_name].toUpperCase();
+                var textB = b["properties"][requested_exp_property_name].toUpperCase();
+                return (textB < textA) ? -1 : (textB > textA) ? 1 : 0;
+            });
+        } else if (requested_sorting_option === "3") {
+            // Sort them by registration date name (newest first)
             requested_experiments.sort(function(a, b) {
                 var dateA = a["registrationDetails"]["registrationDate"];
                 var dateB = b["registrationDetails"]["registrationDate"];
                 return (dateB < dateA) ? -1 : (dateB > dateA) ? 1 : 0;
+            });
+        } else {
+            // Sort them by registration date name (oldest first)
+            requested_experiments.sort(function(a, b) {
+                var dateA = a["registrationDetails"]["registrationDate"];
+                var dateB = b["registrationDetails"]["registrationDate"];
+                return (dateA < dateB) ? -1 : (dateA > dateB) ? 1 : 0;
             });
         }
 
@@ -633,7 +680,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
         machineNames.push(machineNameCheckBoxes[i].id);
     }
 
-    // Keep track of the "Unknonn" machine name.
+    // Keep track of the "Unknown" machine name.
     var indexNoMachineName = machineNames.indexOf("Unknown");
 
     for (var j = 0; j < experimentContainers.length; j++) {
