@@ -37,49 +37,67 @@ function DataModel() {
     this.flowAnalysersMetaprojectsMap = {};
     this.flowSortersMetaprojectsMap = {};
 
-    // Retrieve all projects
-    this.openbisServer.listProjects(function(response) {
+    // All metaprojects
+    this.metaprojects = {};
+
+    // Retrieve the metaprojects
+    this.openbisServer.listMetaprojects(function(response) {
+
+        // Store the metaprojects on success
         if (response.error) {
-
-            // Make sure that the data property is empty
-            DATAMODEL.data = [];
-
-            // Report the error
-            if (DATAMODEL.openbisServer.getSession() == null) {
-                DATAVIEWER.displayStatus("Your session has expired. Please log in to openBIS and try again.", "error");
-            } else {
-                DATAVIEWER.displayStatus("Could not retrieve the list of projects!", "error");
-            }
-
+            DATAMODEL.metaprojects = {};
+        } else if (response.result) {
+            DATAMODEL.metaprojects = response.result;
         } else {
-
-            // Build the data structure
-            DATAMODEL.initDataStructure(response.result);
-
+            DATAMODEL.metaprojects = {};
         }
-    })
+
+        // Retrieve all projects
+        DATAMODEL.openbisServer.listProjects(function(response) {
+            if (response.error) {
+
+                // Make sure that the data property is empty
+                DATAMODEL.data = [];
+
+                // Report the error
+                if (DATAMODEL.openbisServer.getSession() == null) {
+                    DATAVIEWER.displayStatus("Your session has expired. Please log in to openBIS and try again.", "error");
+                } else {
+                    DATAVIEWER.displayStatus("Could not retrieve the list of projects!", "error");
+                }
+
+            } else {
+
+                // Build the data structure
+                DATAMODEL.initDataStructure(response.result);
+
+            }
+        })
+
+    });
+
 }
 
 /**
  * Resolve a metaproject when a reference is passed
  */
-DataModel.prototype.resolveMetaproject = function(metaproject, experimentType) {
+DataModel.prototype.resolveMetaproject = function(expMetaprojects, experimentType) {
 
 
     // If no metaprojects, return the empty object and stop here
-    if (metaproject.length == 0) {
-        return metaproject;
+    if (expMetaprojects.length === 0) {
+        return expMetaprojects;
     }
 
     // Reference to the correct map (per experiment type)
     var metaprojectsMap;
 
     // Filters div
-    if (experimentType == "MICROSCOPY") {
+    if (experimentType === "MICROSCOPY") {
         metaprojectsMap = this.microscopyMetaprojectsMap;
-    } else if (experimentType == "LSR_FORTESSA") {
+    } else if (experimentType === "LSR_FORTESSA") {
         metaprojectsMap = this.flowAnalysersMetaprojectsMap;
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
+    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
         metaprojectsMap = this.flowSortersMetaprojectsMap;
     } else {
         return;
@@ -87,33 +105,60 @@ DataModel.prototype.resolveMetaproject = function(metaproject, experimentType) {
 
 
     // Process all metaprojects
-    for (var i = 0; i < metaproject.length; i++) {
+    for (var i = 0; i < expMetaprojects.length; i++) {
 
         // If valid metaproject, store it and return it
-        if (metaproject[i]['@type'] &&  metaproject[i]['@type'].localeCompare("Metaproject") == 0) {
+        if (expMetaprojects[i]['@type'] &&  expMetaprojects[i]['@type'].localeCompare("Metaproject") === 0) {
 
             // Store the metaproject for future lookup
-            metaprojectsMap[metaproject[i]['@id']] = metaproject[i];
+            metaprojectsMap[expMetaprojects[i]['id']] = expMetaprojects[i];
 
             // Go to the next metaproject
             continue;
         }
 
         // If id (reference), retrieve stored metaproject and replace the id
-        if (typeof(metaproject[i]) === "number") {
-            // Replace the reference with the actual object
-            if (metaproject[i] in metaprojectsMap == false) {
-                console.log("Error: the pointer to the tags belong to a tag assigned to another map!")
+        if (typeof(expMetaprojects[i]) === "number") {
+
+            // Replace the ID reference with the object it points to
+            var mp = this.metaProjectFromID(expMetaprojects[i]);
+
+            if (mp !== null) {
+
+                // Store the metaproject for future lookup
+                expMetaprojects[i] = mp;
+                metaprojectsMap[mp['id']] = mp;
+
             } else {
-                metaproject[i] = metaprojectsMap[metaproject[i]];
+
+                console.log("Error! An experiment metaproject with id = " + expMetaprojects[i] +
+                    " does not have a match in the global list of metaprojects!");
             }
+
+            // Go to the next metaproject
+            continue;
         }
 
+        return null;
     }
 
     // Return the updated metaproject array.
-    return metaproject;
+    return expMetaprojects;
 
+};
+
+DataModel.prototype.metaProjectFromID = function(id) {
+
+    if (this.metaprojects.length === 0) {
+        return null;
+    }
+
+    for (var i = 0; i < this.metaprojects.length; i++) {
+        if (this.metaprojects[i]['id'] === parseInt(id))
+            return this.metaprojects[i];
+    }
+
+    return null;
 };
 
 /**

@@ -192,12 +192,12 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 
     var section = "";
 
-    if (experiment_type == "LSR_FORTESSA" || experiment_type == "FACS_ARIA" ||
-        experiment_type == "INFLUX" || experiment_type == "S3E") {
+    if (experiment_type === "LSR_FORTESSA" || experiment_type === "FACS_ARIA" ||
+        experiment_type === "INFLUX" || experiment_type === "S3E") {
 
         section = "webapp-section_bdfacsdiva-viewer";
 
-    } else if (experiment_type == "MICROSCOPY") {
+    } else if (experiment_type === "MICROSCOPY") {
 
         section = "webapp-section_microscopy-experiment-viewer";
 
@@ -241,7 +241,7 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
     // Check whether the experiment data for current project was already
     // retrieved
-    if (! (project.hasOwnProperty("experiments") && project["experiments"] != {})) {
+    if (! (project.hasOwnProperty("experiments") && project["experiments"] !== {})) {
 
         // Retrieve experiments info and pass again this function for display
         DATAMODEL.retrieveExperimentDataForProject(project, DATAVIEWER.displayExperiments);
@@ -265,8 +265,8 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
 DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Check!
-    if (experimentType != "LSR_FORTESSA" && experimentType != "FACS_ARIA" &&
-        experimentType != "INFLUX" && experimentType != "MICROSCOPY" && experimentType != "S3E") {
+    if (experimentType !== "LSR_FORTESSA" && experimentType !== "FACS_ARIA" &&
+        experimentType !== "INFLUX" && experimentType !== "MICROSCOPY" && experimentType !== "S3E") {
 
         DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
         return;
@@ -280,15 +280,15 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Get the id of the experiment class
     var experimentTypePanelGroupDiv, experimentTypePanelBodyDiv;
-    if (experimentType == "LSR_FORTESSA") {
+    if (experimentType === "LSR_FORTESSA") {
         experimentTypePanelGroupDiv = $("#flow_analyzers");
         experimentTypePanelBodyDiv = $("#flow_analyzers_panel_body");
     }
-    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
+    else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
         experimentTypePanelGroupDiv = $("#flow_sorters");
         experimentTypePanelBodyDiv = $("#flow_sorters_panel_body");
     }
-    else if (experimentType == "MICROSCOPY") {
+    else if (experimentType === "MICROSCOPY") {
         experimentTypePanelGroupDiv = $("#microscopy");
         experimentTypePanelBodyDiv = $("#microscopy_panel_body");
     } else {
@@ -298,13 +298,13 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Machine names per type
     var uniqueMachineNames;
-    if (experimentType == "LSR_FORTESSA") {
+    if (experimentType === "LSR_FORTESSA") {
         uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
     }
-    else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
+    else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
         uniqueMachineNames = this.uniqueFlowSortersMachineNames;
     }
-    else if (experimentType == "MICROSCOPY") {
+    else if (experimentType === "MICROSCOPY") {
         uniqueMachineNames = this.uniqueMicroscopyMachineNames;
     } else {
 
@@ -357,7 +357,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             }
 
             // Push the machine name if it is not in the map yet
-            if (f != "" && uniqueMachineNames.indexOf(f) == -1) {
+            if (f !== "" && uniqueMachineNames.indexOf(f) === -1) {
                 uniqueMachineNames.push(f);
             }
 
@@ -374,11 +374,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             var tags = $("<div>").addClass("experiment_tags");
             var tagsStr = "";
             for (var j = 0; j < m.length; j++) {
-                if (m[j].name !== undefined && m[j].name != "") {
+                if (m !== null && m[j].name !== undefined && m[j].name !== "") {
                     tagsStr = tagsStr + "<span class=\"label label-info tag\">" + m[j].name + "</span>&nbsp;";
                 }
             }
-            if (tagsStr == "") {
+            if (tagsStr === "") {
                 tagsStr = "<i>No tags assigned.</i>";
             }
             tags.html(tagsStr);
@@ -395,7 +395,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             // Hostname friendly name
             var fS;
-            if (f == "") {
+            if (f === "") {
                 f = "Unknown";
             }
             fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>";
@@ -450,15 +450,15 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
 
     // Filters div
     var filterDiv;
-    if (experimentType == "MICROSCOPY") {
+    if (experimentType === "MICROSCOPY") {
         filterDiv = $("#filters_microscopy");
         uniqueMetaProjectIds = this.uniqueMicroscopyMetaProjectIds;
         metaprojectsMap = DATAMODEL.microscopyMetaprojectsMap;
-    } else if (experimentType == "LSR_FORTESSA") {
+    } else if (experimentType === "LSR_FORTESSA") {
         filterDiv = $("#filters_flow_analyzers");
         uniqueMetaProjectIds = this.uniqueFlowAnalysersMetaProjectIds;
         metaprojectsMap = DATAMODEL.flowAnalysersMetaprojectsMap;
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
+    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
         filterDiv = $("#filters_flow_sorters");
         uniqueMetaProjectIds = this.uniqueFlowSortersMetaProjectIds;
         metaprojectsMap = DATAMODEL.flowSortersMetaprojectsMap;
@@ -476,7 +476,7 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
         // Get metaproject's numeric ID in openBIS
         var id = metaprojectsMap[prop].id;
 
-        if ($.inArray(id, uniqueMetaProjectIds) == -1) {
+        if ($.inArray(id, uniqueMetaProjectIds) === -1) {
             uniqueMetaProjectIds.push(id);
         }
 
@@ -530,13 +530,13 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
 
     // Filters div
     var filterDiv;
-    if (experimentType == "MICROSCOPY") {
+    if (experimentType === "MICROSCOPY") {
         filterDiv = $("#filters_microscopy");
         uniqueMachineNames = this.uniqueMicroscopyMachineNames;
-    } else if (experimentType == "LSR_FORTESSA") {
+    } else if (experimentType === "LSR_FORTESSA") {
         filterDiv = $("#filters_flow_analyzers");
         uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
+    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
         filterDiv = $("#filters_flow_sorters");
         uniqueMachineNames = this.uniqueFlowSortersMachineNames;
     } else {
@@ -596,13 +596,13 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
 
     // Filters div
     var filterDiv, experimentContainers;
-    if (experimentType == "MICROSCOPY") {
+    if (experimentType === "MICROSCOPY") {
         filterDiv = $("#filters_microscopy");
         experimentContainers = $("#microscopy .experiment_container");
-    } else if (experimentType == "LSR_FORTESSA") {
+    } else if (experimentType === "LSR_FORTESSA") {
         filterDiv = $("#filters_flow_analyzers");
         experimentContainers = $("#flow_analyzers .experiment_container");
-    } else if (experimentType == "FACS_ARIA" || experimentType == "INFLUX" || experimentType == "S3E") {
+    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
         filterDiv = $("#filters_flow_sorters");
         experimentContainers = $("#flow_sorters .experiment_container");
     } else {
@@ -627,7 +627,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
 
     var machineNameChecked = [];
     var machineNames = [];
-    for (var i = 0; i < machineNameCheckBoxes.length; i++) {
+    for (i = 0; i < machineNameCheckBoxes.length; i++) {
         machineNameChecked.push(machineNameCheckBoxes[i].checked);
         machineNames.push(machineNameCheckBoxes[i].id);
     }
@@ -646,11 +646,11 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
             .find(".experiment_tags")
             .find("span.tag");
 
-        if (tagsForExp.length == 0) {
+        if (tagsForExp.length === 0) {
 
-            if (indexNoTag != -1) {
+            if (indexNoTag !== -1) {
 
-                if (tagChecked[indexNoTag] == true) {
+                if (tagChecked[indexNoTag] === true) {
                     show = true;
                 }
             }
@@ -662,8 +662,8 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
                 var tagName = $(this).text();
 
                 var index = tagNames.indexOf(tagName);
-                if (index != -1) {
-                    if (tagChecked[index] == true) {
+                if (index !== -1) {
+                    if (tagChecked[index] === true) {
                         show = true;
                     }
                 }
@@ -678,23 +678,23 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
             .find("span.machineName")
             .text();
 
-        if (machineName.localeCompare("Unknown") == 0) {
-            if (machineNameChecked[indexNoMachineName] == true) {
+        if (machineName.localeCompare("Unknown") === 0) {
+            if (machineNameChecked[indexNoMachineName] === true) {
                 show = true;
             }
         } else {
 
             // Check if the machine is enabled
             var index = machineNames.indexOf(machineName);
-            if (index != -1) {
-                if (machineNameChecked[index] == true) {
+            if (index !== -1) {
+                if (machineNameChecked[index] === true) {
                     show = true;
                 }
             }
         }
 
         // Now we can finally show or hide the experiment
-        if (show == true) {
+        if (show === true) {
             $(experimentContainers[j]).show();
         } else {
             $(experimentContainers[j]).hide();
