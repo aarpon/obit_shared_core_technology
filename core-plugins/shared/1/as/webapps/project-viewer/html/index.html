@@ -43,8 +43,36 @@
 
 <div id="webapp">
     <h1>Project viewer</h1>
-    <div class="container-fluid">
 
+    <!-- Sorting -->
+    <div id="exp_sorting">
+        <form id="exp_sorting_form"
+              title="Re-select the project after changing the sorting option.">
+            Sort:&nbsp;&nbsp;<label class="radio-inline">
+            <input type="radio"
+                   name="sort_option"
+                   value="1"
+                   checked="checked">
+            By name (ascending)</label>
+            <label class="radio-inline">
+                <input type="radio"
+                       name="sort_option"
+                       value="2">
+                By name (descending)</label>
+            <label class="radio-inline">
+                <input type="radio"
+                       name="sort_option"
+                       value="3">
+                By registration date (newest first)</label>
+            <label class="radio-inline">
+                <input type="radio"
+                       name="sort_option"
+                       value="4">
+                By registration date (oldest first)</label>
+        </form>
+    </div>
+
+    <div class="container-fluid">
         <div class="row">
             <div id="status">&nbsp;</div>
         </div>
@@ -55,34 +83,6 @@
             </div>
             <div class="col-md-8">
                 <h3>Experiments</h3>
-
-                <!-- Sorting -->
-                <div id="exp_sorting">
-                    <form id="exp_sorting_form"
-                          title="Re-select the project after changing the sorting option.">
-                        Sort:&nbsp;&nbsp;<label class="radio-inline">
-                        <input type="radio"
-                               name="sort_option"
-                               value="1"
-                               checked="checked">
-                            By name (ascending)</label>
-                        <label class="radio-inline">
-                            <input type="radio"
-                                   name="sort_option"
-                                   value="2">
-                            By name (descending)</label>
-                        <label class="radio-inline">
-                            <input type="radio"
-                                   name="sort_option"
-                                   value="3">
-                            By registration date (newest first)</label>
-                        <label class="radio-inline">
-                            <input type="radio"
-                                   name="sort_option"
-                                   value="4">
-                            By registration date (oldest first)</label>
-                    </form>
-                </div>
 
                 <!-- Microscopes -->
                 <div id="microscopy">

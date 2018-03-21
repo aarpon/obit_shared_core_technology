@@ -31,19 +31,19 @@
 }
 
 #filters_microscopy {
-    margin: 10px 10px 0px 20px;
+    margin: 10px 10px 0 20px;
     font-size: 10px;
     line-height: 2.3em;
 }
 
 #filters_flow_analyzers {
-    margin: 10px 10px 0px 20px;
+    margin: 10px 10px 0 20px;
     font-size: 10px;
     line-height: 2.3em;
 }
 
 #filters_flow_sorters {
-    margin: 10px 10px 0px 20px;
+    margin: 10px 10px 0 20px;
     font-size: 10px;
     line-height: 2.3em;
 }
@@ -65,7 +65,7 @@
 }
 
 input[type="radio"] {
-    margin-top: 0px;
+    margin-top: 0;
     vertical-align: middle;
 }
 
