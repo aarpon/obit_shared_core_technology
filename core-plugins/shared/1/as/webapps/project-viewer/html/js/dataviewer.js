@@ -189,19 +189,19 @@ DataViewer.prototype.retrieveProjectInfo = function(project) {
 /**
  * Link to the requested experiment.
  * @param permId Permanent ID of the experiment.
- * @param experiment_type Type of experiment, one of LST_FORTESSA, FACS_ARIA, MICROSCOPY
+ * @param experiment_type One of the accepted experiment types.
+ * @see DataModel.isValidExperiment()
  * @returns {Function} Callback
  */
 DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 
     var section = "";
 
-    if (experiment_type === "LSR_FORTESSA" || experiment_type === "FACS_ARIA" ||
-        experiment_type === "INFLUX" || experiment_type === "S3E") {
+    if (DATAMODEL.isFlowExperiment(experiment_type)) {
 
         section = "webapp-section_bdfacsdiva-viewer";
 
-    } else if (experiment_type === "MICROSCOPY") {
+    } else if (DATAMODEL.isMicroscopyExperiment(experiment_type)) {
 
         section = "webapp-section_microscopy-experiment-viewer";
 
@@ -286,7 +286,8 @@ DataViewer.prototype.reDisplayAllExperimentsForProject = function(project) {
 /**
  * Display the data.
  * @param project Project object.
- * @param experimentType string One of "LSR_FORTESSA", "FACS_ARIA", "INFLUX", "MICROSCOPY".
+ * @param experimentType string One of the accepted experiment types.
+ * @see DataModel.isValidExperiment().
  */
 DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
@@ -297,9 +298,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     }
 
     // Check!
-    if (experimentType !== "LSR_FORTESSA" && experimentType !== "FACS_ARIA" &&
-        experimentType !== "INFLUX" && experimentType !== "MICROSCOPY" &&
-        experimentType !== "S3E") {
+    if (! DATAMODEL.isValidExperiment(experimentType)) {
 
         DATAVIEWER.displayStatus("Unknown experiment type! This is a bug! Please report!", "error");
         return;
@@ -313,15 +312,15 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Get the id of the experiment class
     var experimentTypePanelGroupDiv, experimentTypePanelBodyDiv;
-    if (experimentType === "LSR_FORTESSA") {
+    if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
         experimentTypePanelGroupDiv = $("#flow_analyzers");
         experimentTypePanelBodyDiv = $("#flow_analyzers_panel_body");
     }
-    else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
+    else if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
         experimentTypePanelGroupDiv = $("#flow_sorters");
         experimentTypePanelBodyDiv = $("#flow_sorters_panel_body");
     }
-    else if (experimentType === "MICROSCOPY") {
+    else if (DATAMODEL.isMicroscopyExperiment(experimentType)) {
         experimentTypePanelGroupDiv = $("#microscopy");
         experimentTypePanelBodyDiv = $("#microscopy_panel_body");
     } else {
@@ -331,13 +330,13 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Machine names per type
     var uniqueMachineNames;
-    if (experimentType === "LSR_FORTESSA") {
+    if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
         uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
     }
-    else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
+    else if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
         uniqueMachineNames = this.uniqueFlowSortersMachineNames;
     }
-    else if (experimentType === "MICROSCOPY") {
+    else if (DATAMODEL.isMicroscopyExperiment(experimentType)) {
         uniqueMachineNames = this.uniqueMicroscopyMachineNames;
     } else {
 
@@ -498,15 +497,15 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
 
     // Filters div
     var filterDiv;
-    if (experimentType === "MICROSCOPY") {
+    if (DATAMODEL.isMicroscopyExperiment(experimentType)) {
         filterDiv = $("#filters_microscopy");
         uniqueMetaProjectIds = this.uniqueMicroscopyMetaProjectIds;
         metaprojectsMap = DATAMODEL.microscopyMetaprojectsMap;
-    } else if (experimentType === "LSR_FORTESSA") {
+    } else if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
         filterDiv = $("#filters_flow_analyzers");
         uniqueMetaProjectIds = this.uniqueFlowAnalysersMetaProjectIds;
         metaprojectsMap = DATAMODEL.flowAnalysersMetaprojectsMap;
-    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
+    } else if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
         filterDiv = $("#filters_flow_sorters");
         uniqueMetaProjectIds = this.uniqueFlowSortersMetaProjectIds;
         metaprojectsMap = DATAMODEL.flowSortersMetaprojectsMap;
@@ -578,13 +577,13 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
 
     // Filters div
     var filterDiv;
-    if (experimentType === "MICROSCOPY") {
+    if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
         filterDiv = $("#filters_microscopy");
         uniqueMachineNames = this.uniqueMicroscopyMachineNames;
-    } else if (experimentType === "LSR_FORTESSA") {
+    } else if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
         filterDiv = $("#filters_flow_analyzers");
         uniqueMachineNames = this.uniqueFlowAnalysersMachineNames;
-    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
+    } else if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
         filterDiv = $("#filters_flow_sorters");
         uniqueMachineNames = this.uniqueFlowSortersMachineNames;
     } else {
@@ -644,13 +643,13 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
 
     // Filters div
     var filterDiv, experimentContainers;
-    if (experimentType === "MICROSCOPY") {
+    if (DATAMODEL.isMicroscopyExperiment(experimentType)) {
         filterDiv = $("#filters_microscopy");
         experimentContainers = $("#microscopy .experiment_container");
-    } else if (experimentType === "LSR_FORTESSA") {
+    } else if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
         filterDiv = $("#filters_flow_analyzers");
         experimentContainers = $("#flow_analyzers .experiment_container");
-    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
+    } else if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
         filterDiv = $("#filters_flow_sorters");
         experimentContainers = $("#flow_sorters .experiment_container");
     } else {

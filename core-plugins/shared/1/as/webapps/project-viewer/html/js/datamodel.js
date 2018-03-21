@@ -129,6 +129,12 @@ DataModel.prototype.resolveMetaproject = function(expMetaprojects, experiments, 
 
 };
 
+/**
+ * Resolve metaproject object from @id stored in a JSON file/
+ * @param id Id of the metaproject.
+ * @param experiments Array of experiments as returned by openbisServer.listExperiments(project)
+ * @returns metaproject object or null if not found.
+ */
 DataModel.prototype.metaProjectFromID = function(id, experiments) {
 
     for (var i = 0; i < experiments.length; i++) {
@@ -265,4 +271,57 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
 
             }
         });
+};
+
+/**
+ * Checks whether the experiment type is valid and recognized by the app.
+ * @param experimentType experiment type
+ * @return boolean true if the experiment type is valid and recognized by the app, false otherwise.
+ */
+DataModel.prototype.isValidExperiment = function(experimentType) {
+
+    return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
+        experimentType === "INFLUX" || experimentType === "MICROSCOPY" ||
+        experimentType === "S3E")
+};
+
+/**
+ * Checks whether the experiment type is a flow cytometry experiment.
+ * @param experimentType experiment type
+ * @return boolean true if the experiment type is a flow cytometry experiment.
+ */
+DataModel.prototype.isFlowExperiment = function(experimentType) {
+
+    return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
+        experimentType === "INFLUX" || experimentType === "S3E");
+
+};
+
+/**
+ * Checks whether the experiment type is a microscopy experiment.
+ * @param experimentType experiment type
+ * @return boolean true if the experiment type is a microscopy experiment.
+ */
+DataModel.prototype.isMicroscopyExperiment = function(experimentType) {
+
+    return (experimentType === "MICROSCOPY");
+};
+
+/**
+ * Checks whether the experiment type is a flow cytometry experiment for the analyzer class.
+ * @param experimentType experiment type
+ * @return boolean true if the experiment type is a flow cytometry experiment for the analyzer class.
+ */
+DataModel.prototype.isFlowAnalyzerExperiment = function(experimentType) {
+
+    return (experimentType === "LSR_FORTESSA");
+};
+
+/**
+ * Checks whether the experiment type is a flow cytometry experiment for the cell sorter class.
+ * @param experimentType experiment type
+ */
+DataModel.prototype.isFlowSorterExperiment = function(experimentType) {
+
+    return (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E");
 };
