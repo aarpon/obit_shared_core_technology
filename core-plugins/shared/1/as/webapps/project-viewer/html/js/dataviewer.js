@@ -199,7 +199,7 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 
     if (DATAMODEL.isFlowExperiment(experiment_type)) {
 
-        section = "webapp-section_bdfacsdiva-viewer";
+        section = "webapp-section_flow-viewer";
 
     } else if (DATAMODEL.isMicroscopyExperiment(experiment_type)) {
 
