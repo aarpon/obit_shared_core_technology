@@ -257,6 +257,7 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
         this.displayExperiments(project, "FACS_ARIA");
         this.displayExperiments(project, "INFLUX");
         this.displayExperiments(project, "S3E");
+        this.displayExperiments(project, "MOFLO_XDP");
         this.displayExperiments(project, "MICROSCOPY");
     }
 
@@ -280,6 +281,7 @@ DataViewer.prototype.reDisplayAllExperimentsForProject = function(project) {
     this.displayExperiments(project, "FACS_ARIA");
     this.displayExperiments(project, "INFLUX");
     this.displayExperiments(project, "S3E");
+    this.displayExperiments(project, "MOFLO_XDP");
     this.displayExperiments(project, "MICROSCOPY");
 };
 
