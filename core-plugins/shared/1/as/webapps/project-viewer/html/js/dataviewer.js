@@ -579,7 +579,7 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
 
     // Filters div
     var filterDiv;
-    if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
+    if (DATAMODEL.isMicroscopyExperiment(experimentType)) {
         filterDiv = $("#filters_microscopy");
         uniqueMachineNames = this.uniqueMicroscopyMachineNames;
     } else if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
