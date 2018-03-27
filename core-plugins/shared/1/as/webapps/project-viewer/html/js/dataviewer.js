@@ -689,6 +689,8 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
         // Keep track of what is enable and what is disable to decide
         // whether to show or hide the experiment.
         var show = false;
+        var showTag = false;
+        var showMach = false;
 
         // Go over all experiments and filter by assigned tags
         var tagsForExp = $(experimentContainers[j])
@@ -700,7 +702,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
             if (indexNoTag !== -1) {
 
                 if (tagChecked[indexNoTag] === true) {
-                    show = true;
+                    showTag = true;
                 }
             }
         } else {
@@ -713,7 +715,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
                 var index = tagNames.indexOf(tagName);
                 if (index !== -1) {
                     if (tagChecked[index] === true) {
-                        show = true;
+                        showTag = true;
                     }
                 }
             });
@@ -729,7 +731,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
 
         if (machineName.localeCompare("Unknown") === 0) {
             if (machineNameChecked[indexNoMachineName] === true) {
-                show = true;
+                showMach = true;
             }
         } else {
 
@@ -737,10 +739,13 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
             var index = machineNames.indexOf(machineName);
             if (index !== -1) {
                 if (machineNameChecked[index] === true) {
-                    show = true;
+                    showMach = true;
                 }
             }
         }
+
+        // Now combine the flags
+        show = showTag && showMach;
 
         // Now we can finally show or hide the experiment
         if (show === true) {
