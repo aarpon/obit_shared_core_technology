@@ -199,7 +199,7 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
 
     if (DATAMODEL.isFlowExperiment(experiment_type)) {
 
-        section = "webapp-section_bdfacsdiva-viewer";
+        section = "webapp-section_flow-viewer";
 
     } else if (DATAMODEL.isMicroscopyExperiment(experiment_type)) {
 
@@ -257,6 +257,7 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
         this.displayExperiments(project, "FACS_ARIA");
         this.displayExperiments(project, "INFLUX");
         this.displayExperiments(project, "S3E");
+        this.displayExperiments(project, "MOFLO_XDP");
         this.displayExperiments(project, "MICROSCOPY");
     }
 
@@ -280,6 +281,7 @@ DataViewer.prototype.reDisplayAllExperimentsForProject = function(project) {
     this.displayExperiments(project, "FACS_ARIA");
     this.displayExperiments(project, "INFLUX");
     this.displayExperiments(project, "S3E");
+    this.displayExperiments(project, "MOFLO_XDP");
     this.displayExperiments(project, "MICROSCOPY");
 };
 
@@ -577,7 +579,7 @@ DataViewer.prototype.displayMachineNameFilters = function(experimentType) {
 
     // Filters div
     var filterDiv;
-    if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
+    if (DATAMODEL.isMicroscopyExperiment(experimentType)) {
         filterDiv = $("#filters_microscopy");
         uniqueMachineNames = this.uniqueMicroscopyMachineNames;
     } else if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
@@ -687,6 +689,8 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
         // Keep track of what is enable and what is disable to decide
         // whether to show or hide the experiment.
         var show = false;
+        var showTag = false;
+        var showMach = false;
 
         // Go over all experiments and filter by assigned tags
         var tagsForExp = $(experimentContainers[j])
@@ -698,7 +702,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
             if (indexNoTag !== -1) {
 
                 if (tagChecked[indexNoTag] === true) {
-                    show = true;
+                    showTag = true;
                 }
             }
         } else {
@@ -711,7 +715,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
                 var index = tagNames.indexOf(tagName);
                 if (index !== -1) {
                     if (tagChecked[index] === true) {
-                        show = true;
+                        showTag = true;
                     }
                 }
             });
@@ -727,7 +731,7 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
 
         if (machineName.localeCompare("Unknown") === 0) {
             if (machineNameChecked[indexNoMachineName] === true) {
-                show = true;
+                showMach = true;
             }
         } else {
 
@@ -735,10 +739,13 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
             var index = machineNames.indexOf(machineName);
             if (index !== -1) {
                 if (machineNameChecked[index] === true) {
-                    show = true;
+                    showMach = true;
                 }
             }
         }
+
+        // Now combine the flags
+        show = showTag && showMach;
 
         // Now we can finally show or hide the experiment
         if (show === true) {
@@ -749,4 +756,34 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
 
     }
 
+};
+
+/**
+ * Filter experiment by tags and machine name.
+ * @param experimentType Type of the experiment.
+ */
+DataViewer.prototype.filterByExperimentName = function() {
+
+    // Get the filter
+    var filter = $("#filter_by_exp_name").val().toUpperCase();
+
+    // We apply the filter only if it is at least 3 characters long
+    var show_all = false;
+    if (filter.length < 3) {
+        show_all = true;
+    }
+
+    // Process all experiments
+    $("div.experiment_container").each(function() {
+        if (show_all === true) {
+            $(this).show();
+        } else {
+            var expName = $(this).find("a").text();
+            if (expName.toUpperCase().indexOf(filter) > -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        }
+    });
 };

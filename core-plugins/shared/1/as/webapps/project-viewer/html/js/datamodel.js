@@ -75,11 +75,11 @@ DataModel.prototype.resolveMetaproject = function(expMetaprojects, experiments, 
     var metaprojectsMap;
 
     // Filters div
-    if (experimentType === "MICROSCOPY") {
+    if (this.isMicroscopyExperiment(experimentType)) {
         metaprojectsMap = this.microscopyMetaprojectsMap;
-    } else if (experimentType === "LSR_FORTESSA") {
+    } else if (this.isFlowAnalyzerExperiment(experimentType)) {
         metaprojectsMap = this.flowAnalysersMetaprojectsMap;
-    } else if (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E") {
+    } else if (this.isFlowSorterExperiment(experimentType)) {
         metaprojectsMap = this.flowSortersMetaprojectsMap;
     } else {
         return;
@@ -257,6 +257,21 @@ DataModel.prototype.retrieveExperimentDataForProject = function(project) {
             }
         });
 
+    // Retrieve the S3E_EXPERIMENT information for current project
+    this.openbisServer.listExperiments([project["project"]],
+        "MOFLO_XDP_EXPERIMENT", function(response) {
+
+            if (response.error) {
+                // The experiment type INFLUX_EXPERIMENT is not registered.
+                // We ignore it.
+            } else {
+
+                project["experiments"]["MOFLO_XDP"] = response.result;
+                DATAVIEWER.displayExperiments(project, "MOFLO_XDP");
+
+            }
+        });
+
     // Retrieve the MICROSCOPY_EXPERIMENT information for current project
     this.openbisServer.listExperiments([project["project"]],
         "MICROSCOPY_EXPERIMENT", function(response) {
@@ -282,7 +297,7 @@ DataModel.prototype.isValidExperiment = function(experimentType) {
 
     return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
         experimentType === "INFLUX" || experimentType === "MICROSCOPY" ||
-        experimentType === "S3E")
+        experimentType === "S3E" || experimentType === "MOFLO_XDP")
 };
 
 /**
@@ -293,7 +308,7 @@ DataModel.prototype.isValidExperiment = function(experimentType) {
 DataModel.prototype.isFlowExperiment = function(experimentType) {
 
     return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
-        experimentType === "INFLUX" || experimentType === "S3E");
+        experimentType === "INFLUX" || experimentType === "S3E" || experimentType === "MOFLO_XDP");
 
 };
 
@@ -323,5 +338,6 @@ DataModel.prototype.isFlowAnalyzerExperiment = function(experimentType) {
  */
 DataModel.prototype.isFlowSorterExperiment = function(experimentType) {
 
-    return (experimentType === "FACS_ARIA" || experimentType === "INFLUX" || experimentType === "S3E");
+    return (experimentType === "FACS_ARIA" || experimentType === "INFLUX" ||
+        experimentType === "S3E" || experimentType === "MOFLO_XDP");
 };

@@ -44,11 +44,16 @@
 <div id="webapp">
     <h1>Project viewer</h1>
 
+    <!-- Filter by experiment name -->
+    <div id="exp_filtering">
+        Filter by experiment name:&nbsp;&nbsp;<input type="text" id="filter_by_exp_name" placeholder="minimum 3 characters">
+    </div>
+
     <!-- Sorting -->
     <div id="exp_sorting">
         <form id="exp_sorting_form"
               title="Re-select the project after changing the sorting option.">
-            Sort:&nbsp;&nbsp;<label class="radio-inline">
+            Sort experiments:&nbsp;&nbsp;<label class="radio-inline">
             <input type="radio"
                    name="sort_option"
                    value="1"
@@ -221,6 +226,13 @@
         $("#exp_sorting_form").on("change", "[name=sort_option]", function() {
             DATAVIEWER.reDisplayAllExperimentsForProject(window.DATAVIEWER.currentProject);
         });
+
+        /* Attach callback to experiment name filter */
+        $("#filter_by_exp_name").keyup(function() {
+            DATAVIEWER.filterByExperimentName();
+        });
+
+
 
     });
 
