@@ -757,3 +757,33 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
     }
 
 };
+
+/**
+ * Filter experiment by tags and machine name.
+ * @param experimentType Type of the experiment.
+ */
+DataViewer.prototype.filterByExperimentName = function() {
+
+    // Get the filter
+    var filter = $("#filter_by_exp_name").val().toUpperCase();
+
+    // We apply the filter only if it is at least 3 characters long
+    var show_all = false;
+    if (filter.length < 3) {
+        show_all = true;
+    }
+
+    // Process all experiments
+    $("div.experiment_container").each(function() {
+        if (show_all === true) {
+            $(this).show();
+        } else {
+            var expName = $(this).find("a").text();
+            if (expName.toUpperCase().indexOf(filter) > -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        }
+    });
+};

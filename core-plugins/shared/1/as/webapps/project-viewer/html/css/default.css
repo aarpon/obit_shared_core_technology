@@ -58,13 +58,26 @@
     margin-right: 5px;
 }
 
+#exp_filtering {
+    font-size: 11px;
+    text-align: right;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+#exp_filtering input[type="text"] {
+    margin-top: 0;
+    vertical-align: middle;
+    width: 200px;
+}
+
 #exp_sorting {
     font-size: 11px;
     text-align: right;
     margin-right: 10px;
 }
 
-input[type="radio"] {
+#exp_sorting input[type="radio"] {
     margin-top: 0;
     vertical-align: middle;
 }
