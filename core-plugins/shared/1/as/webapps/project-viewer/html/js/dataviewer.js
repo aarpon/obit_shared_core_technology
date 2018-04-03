@@ -760,16 +760,15 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
 
 /**
  * Filter experiment by tags and machine name.
- * @param experimentType Type of the experiment.
  */
 DataViewer.prototype.filterByExperimentName = function() {
 
     // Get the filter
     var filter = $("#filter_by_exp_name").val().toUpperCase();
 
-    // We apply the filter only if it is at least 3 characters long
+    // We apply the filter as soon as one character is typed in the filter
     var show_all = false;
-    if (filter.length < 3) {
+    if (filter.length < 1) {
         show_all = true;
     }
 
