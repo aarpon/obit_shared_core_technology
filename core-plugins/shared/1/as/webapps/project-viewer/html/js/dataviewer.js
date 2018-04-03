@@ -264,6 +264,9 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
     // Store project as currently active one
     this.currentProject = project;
 
+    // Update title
+    this.updateExperimentTitleDiv(project);
+
 };
 
 /**
@@ -283,6 +286,10 @@ DataViewer.prototype.reDisplayAllExperimentsForProject = function(project) {
     this.displayExperiments(project, "S3E");
     this.displayExperiments(project, "MOFLO_XDP");
     this.displayExperiments(project, "MICROSCOPY");
+
+    // Update title
+    this.updateExperimentTitleDiv(project);
+
 };
 
 /**
@@ -785,4 +792,31 @@ DataViewer.prototype.filterByExperimentName = function() {
             }
         }
     });
+};
+
+/**
+ * Update experiment title div.
+ * @param project Project object. If null, the title will be "Experiments"; otherwise
+ * it will be in the form "Experiments for SPACE_CODE/PROJECT_CODE.
+ */
+DataViewer.prototype.updateExperimentTitleDiv = function(project) {
+
+    // Get the div and remove the content
+    var experiment_title = $("#experiment_title");
+    experiment_title.empty();
+
+    // Prepare the title
+    var h3 = $("<h3>");
+    if (project == null) {
+        h3.text("Experiments");
+    } else {
+        h3.text(
+            "Experiments for " +
+            project['project']["spaceCode"] + "/" +
+            project['project']["code"]);
+    }
+
+    // Add the title
+    experiment_title.append(h3);
+
 };
