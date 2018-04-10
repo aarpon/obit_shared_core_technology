@@ -42,7 +42,11 @@
 <body>
 
 <div id="webapp">
-    <h1>Project viewer</h1>
+    <h1><span id="refresh"
+              class="glyphicon glyphicon-refresh"
+              onclick="window.location.reload();"
+              title="Reload">
+    </span>Project viewer</h1>
 
     <!-- Filter by experiment name -->
     <div id="exp_filtering">
@@ -236,8 +240,8 @@
             DATAVIEWER.filterByExperimentName();
         });
 
-
-
+        /* Add refresh button */
+        $("#refresh").addClass("refresh_addon");
     });
 
 </script>

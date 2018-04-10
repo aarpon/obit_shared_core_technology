@@ -17,6 +17,13 @@
     font-family: 'Roboto', sans-serif;
 }
 
+.refresh_addon {
+    cursor: pointer;
+    font-size: 0.6em;
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
 #status {
     text-align: center;
     padding-left: 20px;
