@@ -1,0 +1,159 @@
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-style: normal;
+    src: url('Roboto-300.eot');
+    src: url('Roboto-300.eot?#iefix') format('embedded-opentype'),
+    local('Roboto Light'),
+    local('Roboto-300'),
+    url('Roboto-300.woff2') format('woff2'),
+    url('Roboto-300.woff') format('woff'),
+    url('Roboto-300.ttf') format('truetype'),
+    url('Roboto-300.svg#Roboto') format('svg');
+}
+
+#webapp {
+    padding-left: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.refresh_addon {
+    cursor: pointer;
+    font-size: 0.6em;
+    margin-left: 5px;
+    margin-right: 15px;
+}
+
+#status {
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 10px;
+    max-height: 60px;
+    display: none;
+}
+
+#projects {
+    margin-left: 5px;
+}
+
+#filters_microscopy {
+    margin: 10px 10px 0 20px;
+    font-size: 10px;
+    line-height: 2.3em;
+}
+
+#filters_flow_analyzers {
+    margin: 10px 10px 0 20px;
+    font-size: 10px;
+    line-height: 2.3em;
+}
+
+#filters_flow_sorters {
+    margin: 10px 10px 0 20px;
+    font-size: 10px;
+    line-height: 2.3em;
+}
+
+#flow_analyzers {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+#flow_sorters {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+#exp_filtering {
+    font-size: 11px;
+    text-align: right;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+#exp_filtering input[type="text"] {
+    margin-top: 0;
+    vertical-align: middle;
+    width: 200px;
+}
+
+#exp_sorting {
+    font-size: 11px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+#exp_sorting input[type="radio"] {
+    margin-top: 0;
+    vertical-align: middle;
+}
+
+#microscopy {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+.experiment_tags {
+    font-size: 0.8em;
+    padding-left: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.experiment_description {
+    font-size: 0.8em;
+    padding-left: 10px;
+    font-weight: normal;
+    margin-bottom: 3px;
+}
+
+.experiment_hostname {
+    font-size: 0.8em;
+    padding-left: 10px;
+    font-weight: normal;
+    margin-bottom: 9px;
+}
+
+.tags {
+    font-size: 10px;
+    line-height: 2.3em;
+    font-weight: bold;
+}
+
+.tag_header {
+    float: left;
+    margin-right: 10px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.tag_list {
+    display: inline-block;
+    line-height: 2.3em;
+}
+
+.machineNames {
+    font-size: 10px;
+    line-height: 2.3em;
+    font-weight: bold;
+}
+
+.machineName_header {
+    float: left;
+    margin-right: 10px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.machineName_list {
+    display: inline-block;
+}
+
+.tag {
+    font-size: 90%;
+}
+
+.machineName {
+    font-size: 90%;
+}
