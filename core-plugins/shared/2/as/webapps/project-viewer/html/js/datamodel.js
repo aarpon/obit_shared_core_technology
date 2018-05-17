@@ -185,7 +185,6 @@ DataModel.prototype.initDataStructure = function(projects) {
 /**
  * Retrieve experiment info for given project.
  * @param project object.
- * @param function to be called with the result of the retrieval (most likely a display function).
  */
 DataModel.prototype.retrieveExperimentDataForProject = function(project) {
 
