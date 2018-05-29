@@ -97,6 +97,9 @@ DataViewer.prototype.displayProjects = function(data) {
     // Get the spaces
     var spaces = Object.keys(data);
 
+    // Sort them
+    spaces.sort();
+
     for (var i = 0; i < spaces.length; i++) {
 
         // Create a panel for the space
