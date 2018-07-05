@@ -70,6 +70,7 @@
     text-align: right;
     margin-right: 10px;
     margin-bottom: 5px;
+    padding-top: 10px;
 }
 
 #exp_filtering input[type="text"] {

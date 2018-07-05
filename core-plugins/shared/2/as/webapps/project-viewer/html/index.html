@@ -42,45 +42,60 @@
 <body>
 
 <div id="webapp">
-    <h1><span id="refresh"
-              class="glyphicon glyphicon-refresh"
-              onclick="window.location.reload();"
-              title="Reload">
-    </span>Project viewer</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <h1><span id="refresh"
+                          class="glyphicon glyphicon-refresh"
+                          onclick="window.location.reload();"
+                          title="Reload">
+        </span>Project viewer</h1>
+            </div>
+            <div class="col-md-8">
+                <!-- Filter by experiment name -->
+                <div id="exp_filtering">
+                    Filter by experiment name:&nbsp;&nbsp;<input type="text"
+                                                                 id="filter_by_exp_name"
+                                                                 placeholder="Type one or more characters...">
+                </div>
 
-    <!-- Filter by experiment name -->
-    <div id="exp_filtering">
-        Filter by experiment name:&nbsp;&nbsp;<input type="text"
-                                                     id="filter_by_exp_name"
-                                                     placeholder="Type one or more characters...">
-    </div>
-
-    <!-- Sorting -->
-    <div id="exp_sorting">
-        <form id="exp_sorting_form"
-              title="Re-select the project after changing the sorting option.">
-            Sort experiments:&nbsp;&nbsp;<label class="radio-inline">
-            <input type="radio"
-                   name="sort_option"
-                   value="1"
-                   checked="checked">
-            By name (ascending)</label>
-            <label class="radio-inline">
-                <input type="radio"
-                       name="sort_option"
-                       value="2">
-                By name (descending)</label>
-            <label class="radio-inline">
-                <input type="radio"
-                       name="sort_option"
-                       value="3">
-                By registration date (newest first)</label>
-            <label class="radio-inline">
-                <input type="radio"
-                       name="sort_option"
-                       value="4">
-                By registration date (oldest first)</label>
-        </form>
+                <!-- Sorting -->
+                <div id="exp_sorting">
+                    <form id="exp_sorting_form"
+                          title="Sorting options">
+                        Sort experiments by:&nbsp;&nbsp;<label class="radio-inline"
+                                                     title="Ascending">
+                        <input type="radio"
+                               title="Ascending"
+                               name="sort_option"
+                               value="1"
+                               checked="checked">
+                        ↑ Name</label>
+                        <label class="radio-inline"
+                               title="Descending">
+                            <input type="radio"
+                                   title="Descending"
+                                   name="sort_option"
+                                   value="2">
+                            ↓ Name</label>
+                        <label class="radio-inline"
+                               title="Newest first">
+                            <input type="radio"
+                                   title="Newest first"
+                                   name="sort_option"
+                                   value="3">
+                            ↓ Registration date</label>
+                        <label class="radio-inline"
+                               title="Oldest first">
+                            <input type="radio"
+                                   title="Oldest first"
+                                   name="sort_option"
+                                   value="4">
+                            ↑ Registration date</label>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container-fluid">
@@ -123,7 +138,8 @@
                                             Machines
                                         </div>
                                         <div class="machineName_list">
-                                            &nbsp;</div>
+                                            &nbsp;
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="microscopy_panel_body"
@@ -162,7 +178,8 @@
                                             Machines
                                         </div>
                                         <div class="machineName_list">
-                                            &nbsp;</div>
+                                            &nbsp;
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="flow_analyzers_panel_body"
@@ -201,7 +218,8 @@
                                             Machines
                                         </div>
                                         <div class="machineName_list">
-                                            &nbsp;</div>
+                                            &nbsp;
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="flow_sorters_panel_body"
@@ -231,12 +249,12 @@
         window.DATAMODEL = new DataModel();
 
         /* Attach callback to sorting radio buttons */
-        $("#exp_sorting_form").on("change", "[name=sort_option]", function() {
+        $("#exp_sorting_form").on("change", "[name=sort_option]", function () {
             DATAVIEWER.reDisplayAllExperimentsForProject(window.DATAVIEWER.currentProject);
         });
 
         /* Attach callback to experiment name filter */
-        $("#filter_by_exp_name").keyup(function() {
+        $("#filter_by_exp_name").keyup(function () {
             DATAVIEWER.filterByExperimentName();
         });
 

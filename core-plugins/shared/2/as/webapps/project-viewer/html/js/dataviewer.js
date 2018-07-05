@@ -97,6 +97,9 @@ DataViewer.prototype.displayProjects = function(data) {
     // Get the spaces
     var spaces = Object.keys(data);
 
+    // Sort them
+    spaces.sort();
+
     for (var i = 0; i < spaces.length; i++) {
 
         // Create a panel for the space
@@ -137,11 +140,14 @@ DataViewer.prototype.displayProjects = function(data) {
         spacePanelTitleId.append(space_panel_title_ref);
 
         // Add the panel collapse div
+        // Only the first one is expanded in the beginning)
         var space_panel_collapse = $("<div>")
             .attr("id", "space_panel_collapse_" + i)
             .addClass("panel-collapse")
-            .addClass("collapse")
-            .addClass("in");
+            .addClass("collapse");
+        if (i === 0) {
+            space_panel_collapse.addClass("in");
+        }
         spacePanelId.append(space_panel_collapse);
 
         // Retrieve and store the reference
