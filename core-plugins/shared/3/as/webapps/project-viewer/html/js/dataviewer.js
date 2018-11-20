@@ -224,7 +224,7 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
     }
 
     return function() {
-        window.top.location.hash = "#entity=EXPERIMENT&permId=" + permId +
+        window.top.location.hash = "#entity=SAMPLE&permId=" + permId +
             "&ui-subtab=" + section + "&ui-timestamp=" + (new Date().getTime());
         return false;
     }
