@@ -16,9 +16,9 @@ function DataViewer() {
     this.hideExperimentPanels();
 
     // Tag ids
-    this.uniqueMicroscopyMetaProjectIds = [];
-    this.uniqueFlowAnalysersMetaProjectIds = [];
-    this.uniqueFlowSortersMetaProjectIds = [];
+    this.uniqueMicroscopySampleTagCodes = [];
+    this.uniqueFlowAnalysersSampleTagCodes = [];
+    this.uniqueFlowSortersSampleTagCodes = [];
 
     // Machine names
     this.uniqueMicroscopyMachineNames = [];
@@ -241,13 +241,13 @@ DataViewer.prototype.linkToExperiment = function(permId, experiment_type) {
  */
 DataViewer.prototype.prepareDisplayExperiments = function(project) {
 
-    // Clear metaprojects map and ids, and machine names
-    DATAMODEL.microscopyMetaprojectsMap = {};
-    DATAMODEL.flowAnalysersMetaprojectsMap = {};
-    DATAMODEL.flowSortersMetaprojectsMap = {};
-    this.uniqueMicroscopyMetaProjectIds = [];
-    this.uniqueFlowAnalysersMetaProjectIds = [];
-    this.uniqueFlowSortersMetaProjectIds = [];
+    // Clear sample tag maps and codes, and machine names
+    DATAMODEL.microscopySampleTagCodeMap = {};
+    DATAMODEL.flowAnalysersSampleTagCodeMap = {};
+    DATAMODEL.flowSortersSampleTagCodeMap = {};
+    this.uniqueMicroscopySampleTagCodes = [];
+    this.uniqueFlowAnalysersSampleTagCodes = [];
+    this.uniqueFlowSortersSampleTagCodes = [];
     this.uniqueMicroscopyMachineNames = [];
     this.uniqueFlowAnalysersMachineNames = [];
     this.uniqueFlowSortersMachineNames = [];
@@ -421,10 +421,6 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             var e = requested_experiments[i]["properties"][requested_exp_property_name];
             var c = requested_experiments[i].code;
-            //var m = DATAMODEL.resolveMetaproject(requested_experiments[i].metaprojects,
-            //    requested_experiments, experimentType);
-            var m = null;
-            console.log("Retrieving of metaprojects is currently disabled.");
             var p = requested_experiments[i].permId;
             var f = "";
             if (requested_experiments[i]["properties"][requested_exp_descr_property_hostname]) {
@@ -449,9 +445,14 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             // Add tags
             var tags = $("<div>").addClass("experiment_tags");
             var tagsStr = "";
-            if (m !== null && m[j].name !== undefined && m[j].name !== "") {
-                for (var j = 0; j < m.length; j++) {
-                    tagsStr = tagsStr + "<span class=\"label label-info tag\">" + m[j].name + "</span>&nbsp;";
+            DATAMODEL.storeSampleTags(requested_experiments[i].parents, requested_experiments, experimentType);
+            if (requested_experiments[i].parents !== null) {
+                for (var j = 0; j < requested_experiments[i].parents.length; j++) {
+                    if (requested_experiments[i].parents[j].code !== undefined &&
+                        requested_experiments[i].parents[j].name !== "") {
+                        tagsStr = tagsStr + "<span class=\"label label-info tag\">" +
+                            requested_experiments[i].parents[j].code + "</span>&nbsp;";
+                    }
                 }
             }
             if (tagsStr === "") {
@@ -485,7 +486,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     }
 
     // Display the tag filters
-    this.displayTagFilters(experimentType);
+    this.displaySampleTagFilters(experimentType);
 
     // Display the machine name filters
     this.displayMachineNameFilters(experimentType);
@@ -518,26 +519,26 @@ DataViewer.prototype.hideExperimentPanels = function() {
  * Display filters for current project.
  * @param experimentType Type of the experiment.
  */
-DataViewer.prototype.displayTagFilters = function(experimentType) {
+DataViewer.prototype.displaySampleTagFilters = function(experimentType) {
 
     // Keep track of the tags already shows for this experiment type
-    var uniqueMetaProjectIds;
-    var metaprojectsMap;
+    var uniqueSampleTagCodes;
+    var sampleTagMap;
 
     // Filters div
     var filterDiv;
     if (DATAMODEL.isMicroscopyExperiment(experimentType)) {
         filterDiv = $("#filters_microscopy");
-        uniqueMetaProjectIds = this.uniqueMicroscopyMetaProjectIds;
-        metaprojectsMap = DATAMODEL.microscopyMetaprojectsMap;
+        uniqueSampleTagCodes = this.uniqueMicroscopySampleTagCodes;
+        sampleTagMap = DATAMODEL.microscopySampleTagCodeMap;
     } else if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
         filterDiv = $("#filters_flow_analyzers");
-        uniqueMetaProjectIds = this.uniqueFlowAnalysersMetaProjectIds;
-        metaprojectsMap = DATAMODEL.flowAnalysersMetaprojectsMap;
+        uniqueSampleTagCodes = this.uniqueFlowAnalysersSampleTagCodes;
+        sampleTagMap = DATAMODEL.flowAnalysersSampleTagCodeMap;
     } else if (DATAMODEL.isFlowSorterExperiment(experimentType)) {
         filterDiv = $("#filters_flow_sorters");
-        uniqueMetaProjectIds = this.uniqueFlowSortersMetaProjectIds;
-        metaprojectsMap = DATAMODEL.flowSortersMetaprojectsMap;
+        uniqueSampleTagCodes = this.uniqueFlowSortersSampleTagCodes;
+        sampleTagMap = DATAMODEL.flowSortersSampleTagCodeMap;
     } else {
         return;
     }
@@ -547,28 +548,28 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
     tagDiv.empty();
 
     var cbDiv, lbDiv, inputObj;
-    for (var prop in metaprojectsMap) {
+    for (var prop in sampleTagMap) {
 
-        // Get metaproject's numeric ID in openBIS
-        var id = metaprojectsMap[prop].id;
+        // Get sample tag code
+        var code = sampleTagMap[prop].code;
 
-        if ($.inArray(id, uniqueMetaProjectIds) === -1) {
-            uniqueMetaProjectIds.push(id);
+        if ($.inArray(code, uniqueSampleTagCodes) === -1) {
+            uniqueSampleTagCodes.push(code);
         }
 
         // Add a filter (checkbox) for current tag
         cbDiv = $("<div>")
             .addClass('checkbox-inline');
         lbDiv = $("<label />")
-            .text(metaprojectsMap[prop].name);
+            .text(sampleTagMap[prop].code);
         inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
             .click(function () {
                 DATAVIEWER.filterExperimentByUserSelection(experimentType);
             })
-            .attr("id", metaprojectsMap[prop].name)
-            .attr("value", metaprojectsMap[prop].name);
+            .attr("id", sampleTagMap[prop].code)
+            .attr("value", sampleTagMap[prop].code);
         lbDiv.append(inputObj);
         cbDiv.append(lbDiv);
         tagDiv.append(cbDiv);
@@ -591,7 +592,7 @@ DataViewer.prototype.displayTagFilters = function(experimentType) {
     tagDiv.append(cbDiv);
 
     // Add it to the list of already added tags
-    uniqueMetaProjectIds.push("no_tags");
+    uniqueSampleTagCodes.push("no_tags");
 
 };
 

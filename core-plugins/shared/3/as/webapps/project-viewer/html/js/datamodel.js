@@ -32,10 +32,10 @@ function DataModel() {
     // Store the data
     this.data = [];
 
-    // Map of the metaprojects references
-    this.microscopyMetaprojectsMap = {};
-    this.flowAnalysersMetaprojectsMap = {};
-    this.flowSortersMetaprojectsMap = {};
+    // Map of the sample tag references
+    this.microscopySampleTagCodeMap = {};
+    this.flowAnalysersSampleTagCodeMap = {};
+    this.flowSortersSampleTagCodeMap = {};
 
     // Retrieve all projects
     this.openbisServer.listProjects(function (response) {
@@ -62,94 +62,42 @@ function DataModel() {
 }
 
 /**
- * Resolve a metaproject when a reference is passed
+ * Store tags for the passed experiments of given type.
  */
-DataModel.prototype.resolveMetaproject = function (expMetaprojects, experiments, experimentType) {
+DataModel.prototype.storeSampleTags = function (sampleTags, experiments, experimentType) {
 
-    // If no metaprojects, return the empty object and stop here
-    if (expMetaprojects.length === 0) {
-        return expMetaprojects;
+    // If no sample tags, return the empty object and stop here
+    if (sampleTags.length === 0) {
+        return;
     }
 
     // Reference to the correct map (per experiment type)
-    var metaprojectsMap;
+    var sampleTagCodeMap;
 
     // Filters div
     if (this.isMicroscopyExperiment(experimentType)) {
-        metaprojectsMap = this.microscopyMetaprojectsMap;
+        sampleTagCodeMap = this.microscopySampleTagCodeMap;
     } else if (this.isFlowAnalyzerExperiment(experimentType)) {
-        metaprojectsMap = this.flowAnalysersMetaprojectsMap;
+        sampleTagCodeMap = this.flowAnalysersSampleTagCodeMap;
     } else if (this.isFlowSorterExperiment(experimentType)) {
-        metaprojectsMap = this.flowSortersMetaprojectsMap;
+        sampleTagCodeMap = this.flowSortersSampleTagCodeMap;
     } else {
         return;
     }
 
-    // Process all metaprojects
-    for (var i = 0; i < expMetaprojects.length; i++) {
+    // Process all sample tags
+    for (var i = 0; i < sampleTags.length; i++) {
 
-        // If valid metaproject, store it and return it
-        if (expMetaprojects[i]['@type'] && expMetaprojects[i]['@type'].localeCompare("Metaproject") === 0) {
+        // If valid sample tag, store it and return it
+        if (sampleTags[i]['@type'] &&
+            sampleTags[i]['@type'].localeCompare("Sample") === 0 &&
+            sampleTags[i]['sampleTypeCode'] &&
+            sampleTags[i]['sampleTypeCode'].localeCompare("ORGANIZATION_UNIT") === 0) {
 
-            // Store the metaproject for future lookup
-            metaprojectsMap[expMetaprojects[i]['id']] = expMetaprojects[i];
-
-            // Go to the next metaproject
-            continue;
-        }
-
-        // If id (reference), retrieve stored metaproject and replace the id
-        if (typeof (expMetaprojects[i]) === "number") {
-
-            // We need to find the other experiment metaproject that has an @id corresponding
-            // to this integer points.
-            var mp = this.metaProjectFromID(expMetaprojects[i], experiments);
-
-            if (mp !== null) {
-
-                // Store the metaproject for future lookup
-                expMetaprojects[i] = mp;
-                metaprojectsMap[mp['id']] = mp;
-
-
-            } else {
-
-                console.log("Error! Could not find a match for metaproject with @id = " + expMetaprojects[i] + "!");
-            }
-
-            // Go to the next metaproject
-            continue;
-        }
-
-        return null;
-    }
-
-    // Return the updated metaproject array.
-    return expMetaprojects;
-
-};
-
-/**
- * Resolve metaproject object from @id stored in a JSON file/
- * @param id Id of the metaproject.
- * @param experiments Array of experiments as returned by openbisServer.listExperiments(project)
- * @returns metaproject object or null if not found.
- */
-DataModel.prototype.metaProjectFromID = function (id, experiments) {
-
-    for (var i = 0; i < experiments.length; i++) {
-
-        for (var j = 0; j < experiments[i].metaprojects.length; j++) {
-
-            if (typeof (experiments[i].metaprojects[j]) !== "number") {
-                if (experiments[i].metaprojects[j]['@id'] === id) {
-                    return experiments[i].metaprojects[j];
-                }
-            }
+            // Store the sample tag for future lookup
+            sampleTagCodeMap[sampleTags[i]['code']] = sampleTags[i];
         }
     }
-
-    return null;
 };
 
 /**
@@ -424,6 +372,7 @@ DataModel.prototype.getSamplesOfType = function (type, expCode, action) {
         };
 
     // Search
-    this.openbisServer.searchForSamples(sampleCriteria, action);
+    this.openbisServer.searchForSamplesWithFetchOptions(sampleCriteria,
+        ["PARENTS", "PROPERTIES"], action);
 
 };
