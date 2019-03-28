@@ -16,9 +16,9 @@ function DataViewer() {
     this.hideExperimentPanels();
 
     // Tag ids
-    this.uniqueMicroscopySampleTagCodes = [];
-    this.uniqueFlowAnalysersSampleTagCodes = [];
-    this.uniqueFlowSortersSampleTagCodes = [];
+    this.uniqueMicroscopySampleTagCodes = {};
+    this.uniqueFlowAnalysersSampleTagCodes = {};
+    this.uniqueFlowSortersSampleTagCodes = {};
 
     // Machine names
     this.uniqueMicroscopyMachineNames = [];
@@ -245,9 +245,9 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
     DATAMODEL.microscopySampleTagCodeMap = {};
     DATAMODEL.flowAnalysersSampleTagCodeMap = {};
     DATAMODEL.flowSortersSampleTagCodeMap = {};
-    this.uniqueMicroscopySampleTagCodes = [];
-    this.uniqueFlowAnalysersSampleTagCodes = [];
-    this.uniqueFlowSortersSampleTagCodes = [];
+    this.uniqueMicroscopySampleTagCodes = {};
+    this.uniqueFlowAnalysersSampleTagCodes = {};
+    this.uniqueFlowSortersSampleTagCodes = {};
     this.uniqueMicroscopyMachineNames = [];
     this.uniqueFlowAnalysersMachineNames = [];
     this.uniqueFlowSortersMachineNames = [];
@@ -450,8 +450,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 for (var j = 0; j < requested_experiments[i].parents.length; j++) {
                     if (requested_experiments[i].parents[j].code !== undefined &&
                         requested_experiments[i].parents[j].name !== "") {
-                        tagsStr = tagsStr + "<span class=\"label label-info tag\">" +
-                            requested_experiments[i].parents[j].code + "</span>&nbsp;";
+                        tagsStr = tagsStr + "<span " +
+                            "id=\"" + requested_experiments[i].parents[j].code + "\" " +
+                            "class=\"label label-info tag\">" +
+                            requested_experiments[i].parents[j].properties["NAME"] +
+                            "</span>&nbsp;";
                     }
                 }
             }
@@ -550,18 +553,19 @@ DataViewer.prototype.displaySampleTagFilters = function(experimentType) {
     var cbDiv, lbDiv, inputObj;
     for (var prop in sampleTagMap) {
 
-        // Get sample tag code
+        // Get sample tag name
         var code = sampleTagMap[prop].code;
+        var name = sampleTagMap[prop].properties["NAME"];
 
-        if ($.inArray(code, uniqueSampleTagCodes) === -1) {
-            uniqueSampleTagCodes.push(code);
+        if (!(code in uniqueSampleTagCodes)) {
+            uniqueSampleTagCodes[code] = name;
         }
 
         // Add a filter (checkbox) for current tag
         cbDiv = $("<div>")
             .addClass('checkbox-inline');
         lbDiv = $("<label />")
-            .text(sampleTagMap[prop].code);
+            .text(name);
         inputObj = $("<input />")
             .attr("type", "checkbox")
             .prop('checked', true)
@@ -592,7 +596,7 @@ DataViewer.prototype.displaySampleTagFilters = function(experimentType) {
     tagDiv.append(cbDiv);
 
     // Add it to the list of already added tags
-    uniqueSampleTagCodes.push("no_tags");
+    uniqueSampleTagCodes["no_tags"] = "no_tags";
 
 };
 
@@ -690,14 +694,14 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
     var tagCheckBoxes = filterDiv.find("div.tag_list").find(':checkbox');
 
     var tagChecked = [];
-    var tagNames = [];
+    var tagIds = [];
     for (var i = 0; i < tagCheckBoxes.length; i++) {
         tagChecked.push(tagCheckBoxes[i].checked);
-        tagNames.push(tagCheckBoxes[i].id);
+        tagIds.push(tagCheckBoxes[i].id);
     }
 
     // Keep track of the "no_tags" filter
-    var indexNoTag = tagNames.indexOf("no_tags");
+    var indexNoTag = tagIds.indexOf("no_tags");
 
     // Get all machine name checkboxes
     var machineNameCheckBoxes = filterDiv.find("div.machineName_list").find(':checkbox');
@@ -738,9 +742,9 @@ DataViewer.prototype.filterExperimentByUserSelection = function(experimentType) 
             // If any of its tags is checked, we display it.
             $(tagsForExp).each(function () {
 
-                var tagName = $(this).text();
+                var tagId = this.id;
 
-                var index = tagNames.indexOf(tagName);
+                var index = tagIds.indexOf(tagId);
                 if (index !== -1) {
                     if (tagChecked[index] === true) {
                         showTag = true;
