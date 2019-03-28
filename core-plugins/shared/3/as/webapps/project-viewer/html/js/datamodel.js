@@ -335,9 +335,9 @@ DataModel.prototype.isFlowSorterExperiment = function (experimentType) {
 
 /**
  * Retrieve samples of requested type belonging to specified experiment.
- * @param {String} type
- * @param {String} experiment permID
- * @param {Function} action Callback
+ * @param {String} type Requested sample type.
+ * @param {String} expID Experiment permID
+ * @param {Function} action Callback to be execute on the result.
  * @returns {Array} List of samples of requested type belonging to the specified experiment.
  */
 DataModel.prototype.getSamplesOfType = function (type, expID, action) {
