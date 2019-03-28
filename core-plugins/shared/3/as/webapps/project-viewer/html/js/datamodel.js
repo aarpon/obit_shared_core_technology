@@ -179,99 +179,94 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
 
                             break;
 
-                        case "FLOW_CYTOMETRY_EXPERIMENTS_COLLECTION":
+                        case "FLOW_ANALYZERS_EXPERIMENTS_COLLECTION":
 
-                            // TEMP
-                            project["experiments"]["LSR_FORTESSA"] = null;
-                            project["experiments"]["FACS_ARIA"] = null;
-                            project["experiments"]["INFLUX"] = null;
-                            project["experiments"]["S3E"] = null;
-                            project["experiments"]["MOFLO_XDP"] = null;
 
-                            // Break down by type
-                            /*
-                                            // Get all sampes {...}_EXPERIMENT for current collection
+                            // Retrieve the LSR_FORTESSA_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("LSR_FORTESSA_EXPERIMENT", experiment.permId,
+                                function (response) {
 
-                // Retrieve the LSR_FORTESSA_EXPERIMENT information for current project
-                DATAMODEL.getSamplesOfType("LSR_FORTESSA_EXPERIMENT", response.result[0].code,
-                    function (response) {
+                                    if (response.error) {
+                                        // The experiment type LSR_FORTESSA_EXPERIMENT is not registered.
+                                        // We ignore it.
+                                    } else {
 
-                        if (response.error) {
-                            // The experiment type LSR_FORTESSA_EXPERIMENT is not registered.
-                            // We ignore it.
-                        } else {
+                                        project["experiments"]["LSR_FORTESSA"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "LSR_FORTESSA");
 
-                            project["experiments"]["LSR_FORTESSA"] = response.result;
-                            DATAVIEWER.displayExperiments(project, "LSR_FORTESSA");
+                                    }
+                                });
+                            break;
 
-                        }
-                    });
+                        case "FLOW_SORTERS_EXPERIMENTS_COLLECTION":
 
-                // Retrieve the FACS_ARIA_EXPERIMENT information for current project
-                DATAMODEL.getSamplesOfType("FACS_ARIA_EXPERIMENT", response.result[0].code,
-                    function (response) {
 
-                        if (response.error) {
-                            // The experiment type FACS_ARIA_EXPERIMENT is not registered.
-                            // We ignore it.
-                        } else {
+                            // Retrieve the FACS_ARIA_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("FACS_ARIA_EXPERIMENT", experiment.permId,
+                                function (response) {
 
-                            project["experiments"]["FACS_ARIA"] = response.result;
-                            DATAVIEWER.displayExperiments(project, "FACS_ARIA");
+                                    if (response.error) {
+                                        // The experiment type FACS_ARIA_EXPERIMENT is not registered.
+                                        // We ignore it.
+                                    } else {
 
-                        }
-                    });
+                                        project["experiments"]["FACS_ARIA"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "FACS_ARIA");
 
-                // Retrieve the INFLUX_EXPERIMENT information for current project
-                DATAMODEL.getSamplesOfType("INFLUX_EXPERIMENT", response.result[0].code,
-                    function (response) {
+                                    }
+                                });
 
-                        if (response.error) {
-                            // The experiment type INFLUX_EXPERIMENT is not registered.
-                            // We ignore it.
-                        } else {
+                            // Retrieve the INFLUX_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("INFLUX_EXPERIMENT", experiment.permId,
+                                function (response) {
 
-                            project["experiments"]["INFLUX"] = response.result;
-                            DATAVIEWER.displayExperiments(project, "INFLUX");
+                                    if (response.error) {
+                                        // The experiment type INFLUX_EXPERIMENT is not registered.
+                                        // We ignore it.
+                                    } else {
 
-                        }
-                    });
+                                        project["experiments"]["INFLUX"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "INFLUX");
 
-                // Retrieve the S3E_EXPERIMENT information for current project
-                DATAMODEL.getSamplesOfType("S3E_EXPERIMENT", response.result[0].code,
-                    function (response) {
+                                    }
+                                });
 
-                        if (response.error) {
-                            // The experiment type INFLUX_EXPERIMENT is not registered.
-                            // We ignore it.
-                        } else {
+                            // Retrieve the S3E_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("S3E_EXPERIMENT", experiment.permId,
+                                function (response) {
 
-                            project["experiments"]["S3E"] = response.result;
-                            DATAVIEWER.displayExperiments(project, "S3E");
+                                    if (response.error) {
+                                        // The experiment type INFLUX_EXPERIMENT is not registered.
+                                        // We ignore it.
+                                    } else {
 
-                        }
-                    });
+                                        project["experiments"]["S3E"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "S3E");
 
-                // Retrieve the S3E_EXPERIMENT information for current project
-                DATAMODEL.getSamplesOfType("MOFLO_XDP_EXPERIMENT", response.result[0].code,
-                    function (response) {
+                                    }
+                                });
 
-                        if (response.error) {
-                            // The experiment type INFLUX_EXPERIMENT is not registered.
-                            // We ignore it.
-                        } else {
+                            // Retrieve the S3E_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("MOFLO_XDP_EXPERIMENT", experiment.permId,
+                                function (response) {
 
-                            project["experiments"]["MOFLO_XDP"] = response.result;
-                            DATAVIEWER.displayExperiments(project, "MOFLO_XDP");
+                                    if (response.error) {
+                                        // The experiment type INFLUX_EXPERIMENT is not registered.
+                                        // We ignore it.
+                                    } else {
 
-                        }
-                    });
+                                        project["experiments"]["MOFLO_XDP"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "MOFLO_XDP");
 
-                             */
+                                    }
+                                });
+
+
                             break;
 
                         case "ORGANIZATION_UNITS_COLLECTION":
-                        // For the time being, we ignore these experiments
+
+                        // We ignore these collections here.
                     }
 
                 }
