@@ -163,7 +163,7 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                         case "MICROSCOPY_EXPERIMENTS_COLLECTION":
 
                             // Retrieve the MICROSCOPY_EXPERIMENT information for current project
-                            DATAMODEL.getSamplesOfType("MICROSCOPY_EXPERIMENT", experiment.code,
+                            DATAMODEL.getSamplesOfType("MICROSCOPY_EXPERIMENT", experiment.permId,
                                 function (response) {
 
                                     if (response.error) {
@@ -334,42 +334,31 @@ DataModel.prototype.isFlowSorterExperiment = function (experimentType) {
 };
 
 /**
- * Get the plates for current experiment
+ * Retrieve samples of requested type belonging to specified experiment.
  * @param {String} type
- * @param {String} expCode
+ * @param {String} experiment permID
  * @param {Function} action Callback
- * @returns {Array} plates Array of plates.
+ * @returns {Array} List of samples of requested type belonging to the specified experiment.
  */
-DataModel.prototype.getSamplesOfType = function (type, expCode, action) {
+DataModel.prototype.getSamplesOfType = function (type, expID, action) {
 
     // Experiment criteria
-    var experimentCriteria =
-        {
-            targetEntityKind: "EXPERIMENT",
-            criteria: {
-                matchClauses:
-                    [{
-                        "@type": "AttributeMatchClause",
-                        "attribute": "CODE",
-                        "fieldType": "ATTRIBUTE",
-                        "desiredValue": expCode
-                    }]
-            }
-        };
+    var experimentCriteria = new SearchCriteria();
+    experimentCriteria.addMatchClause(
+        SearchCriteriaMatchClause.createAttributeMatch("PERM_ID", expID)
+    );
+    experimentCriteria.addMatchClause(
+        SearchCriteriaMatchClause.createAttributeMatch("TYPE", "COLLECTION")
+    );
 
     // Sample (type) criteria
-    var sampleCriteria =
-        {
-            subCriterias: [experimentCriteria],
-            matchClauses:
-                [{
-                    "@type": "AttributeMatchClause",
-                    attribute: "TYPE",
-                    fieldType: "ATTRIBUTE",
-                    desiredValue: type
-                }],
-            operator: "MATCH_ALL_CLAUSES"
-        };
+    var sampleCriteria = new SearchCriteria();
+    sampleCriteria.addMatchClause(
+        SearchCriteriaMatchClause.createAttributeMatch("TYPE", type)
+    );
+    sampleCriteria.addSubCriteria(
+        SearchSubCriteria.createExperimentCriteria(experimentCriteria)
+    );
 
     // Search
     this.openbisServer.searchForSamplesWithFetchOptions(sampleCriteria,
