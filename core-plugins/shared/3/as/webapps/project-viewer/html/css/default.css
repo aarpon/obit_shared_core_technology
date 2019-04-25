@@ -95,6 +95,11 @@
     margin-right: 5px;
 }
 
+.experiment_subgroup {
+    border-bottom: solid 1px lightgray;
+    margin-bottom: 5px;
+}
+
 .experiment_tags {
     font-size: 0.8em;
     padding-left: 10px;

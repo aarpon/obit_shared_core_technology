@@ -333,7 +333,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     }
 
     // Get the id of the experiment class
-    var experimentTypePanelGroupDiv, experimentTypePanelBodyDiv;
+    var experimentTypePanelGroupDiv, experimentTypePanelSubGroupDiv, experimentTypePanelBodyDiv;
     if (DATAMODEL.isFlowAnalyzerExperiment(experimentType)) {
         experimentTypePanelGroupDiv = $("#flow_analyzers");
         experimentTypePanelBodyDiv = $("#flow_analyzers_panel_body");
@@ -386,6 +386,11 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     var nExp = requested_experiments.length;
     if (nExp > 0) {
 
+        // Expriment subgroup div
+        var experimentSubGroupDiv= $("<div>").addClass("experiment_subgroup");
+        experimentTypePanelBodyDiv.append(experimentSubGroupDiv);
+
+        // Sorting
         if (requested_sorting_option === "1") {
             // Sort them by experiment name (ascending)
             requested_experiments.sort(function(a, b) {
@@ -434,13 +439,13 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             }
 
             // Wrap an experiment in a div
-            var experimentContainerDir = $("<div>").addClass("experiment_container");
-            experimentTypePanelBodyDiv.append(experimentContainerDir);
+            var experimentContainerDiv = $("<div>").addClass("experiment_container");
+            experimentSubGroupDiv.append(experimentContainerDiv);
 
             // Add the experiment name with link to the viewer web app
             var link = $("<a>").addClass("experiment").text(e).attr("href", "#").attr("title", c).click(
                 DATAVIEWER.linkToExperiment(p, experimentType));
-            experimentContainerDir.append(link);
+            experimentContainerDiv.append(link);
 
             // Add tags
             var tags = $("<div>").addClass("experiment_tags");
@@ -462,7 +467,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 tagsStr = "<i>No tags assigned.</i>";
             }
             tags.html(tagsStr);
-            experimentContainerDir.append(tags);
+            experimentContainerDiv.append(tags);
 
             var d = requested_experiments[i]["properties"][requested_exp_descr_property_name];
             if (d === undefined || d === "") {
@@ -471,7 +476,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
             // Display the description
             var q = $("<div>").addClass("experiment_description").html(d);
-            experimentContainerDir.append(q);
+            experimentContainerDiv.append(q);
 
             // Hostname friendly name
             var fS;
@@ -480,7 +485,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             }
             fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>";
             var fN = $("<div>").addClass("experiment_hostname").html(fS);
-            experimentContainerDir.append(fN);
+            experimentContainerDiv.append(fN);
         }
 
         // Show the panel group
