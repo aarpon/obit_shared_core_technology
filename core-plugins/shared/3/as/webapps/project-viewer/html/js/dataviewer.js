@@ -375,7 +375,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
     // Get the requested experiments
     var requested_experiments = experiments[experimentType];
-    var requested_exp_property_name = experimentType + "_EXPERIMENT_NAME";
+    var requested_exp_property_name = "NAME";
     var requested_exp_descr_property_name = experimentType + "_EXPERIMENT_DESCRIPTION";
     var requested_exp_descr_property_hostname = experimentType + "_EXPERIMENT_ACQ_HARDWARE_FRIENDLY_NAME";
 
@@ -423,6 +423,12 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
 
         // Display experiments
         for (var i = 0; i < requested_experiments.length; i++) {
+
+            // Make sure there is information to display
+            if ($.isEmptyObject(requested_experiments[0]["properties"])) {
+                nExp--;
+                continue;
+            }
 
             var e = requested_experiments[i]["properties"][requested_exp_property_name];
             var c = requested_experiments[i].code;
@@ -489,8 +495,9 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
         }
 
         // Show the panel group
-        experimentTypePanelGroupDiv.show();
-
+        if (nExp > 0) {
+            experimentTypePanelGroupDiv.show();
+        }
     }
 
     // Display the tag filters
