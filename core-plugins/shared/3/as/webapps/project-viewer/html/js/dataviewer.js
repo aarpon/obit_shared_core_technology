@@ -25,9 +25,12 @@ function DataViewer() {
     this.uniqueFlowAnalysersMachineNames = [];
     this.uniqueFlowSortersMachineNames = [];
 
-
     // Keep track of currently selected projects
     this.currentProject = null;
+
+    // SPACE names and PROJECT names to hide
+    this.SPACES_TO_HIDE = ["ELN_SETTINGS"];
+    this.PROJECTS_TO_HIDE = ["COMMON_ORGANIZATION_UNITS"];
 }
 
 /**
@@ -102,6 +105,12 @@ DataViewer.prototype.displayProjects = function(data) {
 
     for (var i = 0; i < spaces.length; i++) {
 
+        // Should we skip current space?
+        if ($.inArray(spaces[i], this.SPACES_TO_HIDE) !== -1) {
+            continue;
+        }
+
+        // Do not display the ELN_SETTINGS space
         // Create a panel for the space
         var space_panel = $("<div>")
             .attr("id", "space" + i)
@@ -168,8 +177,8 @@ DataViewer.prototype.displayProjects = function(data) {
             // Get the project
             var project = data[spaces[i]][j];
 
-            // Do not display COMMON_ORGANIZATION_UNITS projects
-            if (project["project"].code === "COMMON_ORGANIZATION_UNITS") {
+            // Should we skip current project?
+            if ($.inArray(project["project"].code, this.PROJECTS_TO_HIDE) !== -1) {
                 continue;
             }
 
