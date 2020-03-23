@@ -246,12 +246,12 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                     }
                                 });
 
-                            // Retrieve the S3E_EXPERIMENT information for current project
+                            // Retrieve the MOFLO_XDP_EXPERIMENT information for current project
                             DATAMODEL.getSamplesOfType("MOFLO_XDP_EXPERIMENT", experiment.permId,
                                 function (response) {
 
                                     if (response.error) {
-                                        // The experiment type INFLUX_EXPERIMENT is not registered.
+                                        // The experiment type MOFLO_XDP_EXPERIMENT is not registered.
                                         // We ignore it.
                                     } else {
 
@@ -261,6 +261,35 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                     }
                                 });
 
+                            // Retrieve the SONY_SH800S_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("SONY_SH800S_EXPERIMENT", experiment.permId,
+                                function (response) {
+
+                                    if (response.error) {
+                                        // The experiment type SONY_SH800S is not registered.
+                                        // We ignore it.
+                                    } else {
+
+                                        project["experiments"]["SONY_SH800S"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "SONY_SH800S");
+
+                                    }
+                                });
+
+                            // Retrieve the SONY_MA900_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("SONY_MA900_EXPERIMENT", experiment.permId,
+                                function (response) {
+
+                                    if (response.error) {
+                                        // The experiment type SONY_MA900 is not registered.
+                                        // We ignore it.
+                                    } else {
+
+                                        project["experiments"]["SONY_MA900"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "SONY_MA900");
+
+                                    }
+                                });
 
                             break;
 
@@ -283,7 +312,8 @@ DataModel.prototype.isValidExperiment = function (experimentType) {
 
     return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
         experimentType === "INFLUX" || experimentType === "MICROSCOPY" ||
-        experimentType === "S3E" || experimentType === "MOFLO_XDP")
+        experimentType === "S3E" || experimentType === "MOFLO_XDP" ||
+        experimentType === "SONY_MA900" || experimentType === "SONY_SH800S");
 };
 
 /**
@@ -294,7 +324,8 @@ DataModel.prototype.isValidExperiment = function (experimentType) {
 DataModel.prototype.isFlowExperiment = function (experimentType) {
 
     return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
-        experimentType === "INFLUX" || experimentType === "S3E" || experimentType === "MOFLO_XDP");
+        experimentType === "INFLUX" || experimentType === "S3E" || experimentType === "MOFLO_XDP" ||
+        experimentType === "SONY_MA900" || experimentType === "SONY_SH800S");
 
 };
 
@@ -325,7 +356,8 @@ DataModel.prototype.isFlowAnalyzerExperiment = function (experimentType) {
 DataModel.prototype.isFlowSorterExperiment = function (experimentType) {
 
     return (experimentType === "FACS_ARIA" || experimentType === "INFLUX" ||
-        experimentType === "S3E" || experimentType === "MOFLO_XDP");
+        experimentType === "S3E" || experimentType === "MOFLO_XDP" ||
+        experimentType === "SONY_MA900" || experimentType === "SONY_SH800S");
 };
 
 /**
