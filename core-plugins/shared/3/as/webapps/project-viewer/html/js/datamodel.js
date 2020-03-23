@@ -196,6 +196,23 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
 
                                     }
                                 });
+
+
+                            // Retrieve the CYTOFLEX_S_EXPERIMENT information for current project
+                            DATAMODEL.getSamplesOfType("CYTOFLEX_S_EXPERIMENT", experiment.permId,
+                                function (response) {
+
+                                    if (response.error) {
+                                        // The experiment type CYTOFLEX_S is not registered.
+                                        // We ignore it.
+                                    } else {
+
+                                        project["experiments"]["CYTOFLEX_S"] = response.result;
+                                        DATAVIEWER.displayExperiments(project, "CYTOFLEX_S");
+
+                                    }
+                                });
+
                             break;
 
                         case "FLOW_SORTERS_EXPERIMENTS_COLLECTION":
@@ -261,7 +278,6 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                     }
                                 });
 
-
                             break;
 
                         case "ORGANIZATION_UNITS_COLLECTION":
@@ -283,7 +299,8 @@ DataModel.prototype.isValidExperiment = function (experimentType) {
 
     return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
         experimentType === "INFLUX" || experimentType === "MICROSCOPY" ||
-        experimentType === "S3E" || experimentType === "MOFLO_XDP")
+        experimentType === "S3E" || experimentType === "MOFLO_XDP" ||
+        experimentType === "CYTOFLEX_S");
 };
 
 /**
@@ -294,7 +311,8 @@ DataModel.prototype.isValidExperiment = function (experimentType) {
 DataModel.prototype.isFlowExperiment = function (experimentType) {
 
     return (experimentType === "LSR_FORTESSA" || experimentType === "FACS_ARIA" ||
-        experimentType === "INFLUX" || experimentType === "S3E" || experimentType === "MOFLO_XDP");
+        experimentType === "INFLUX" || experimentType === "S3E" || experimentType === "MOFLO_XDP" ||
+        experimentType === "CYTOFLEX_S");
 
 };
 
@@ -315,7 +333,7 @@ DataModel.prototype.isMicroscopyExperiment = function (experimentType) {
  */
 DataModel.prototype.isFlowAnalyzerExperiment = function (experimentType) {
 
-    return (experimentType === "LSR_FORTESSA");
+    return (experimentType === "LSR_FORTESSA" || experimentType === "CYTOFLEX_S");
 };
 
 /**

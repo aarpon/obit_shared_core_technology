@@ -280,6 +280,7 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
         this.displayExperiments(project, "INFLUX");
         this.displayExperiments(project, "S3E");
         this.displayExperiments(project, "MOFLO_XDP");
+        this.displayExperiments(project, "CYTOFLEX_S");
         this.displayExperiments(project, "MICROSCOPY");
     }
 
@@ -307,6 +308,7 @@ DataViewer.prototype.reDisplayAllExperimentsForProject = function(project) {
     this.displayExperiments(project, "INFLUX");
     this.displayExperiments(project, "S3E");
     this.displayExperiments(project, "MOFLO_XDP");
+    this.displayExperiments(project, "CYTOFLEX_S");
     this.displayExperiments(project, "MICROSCOPY");
 
     // Update title
