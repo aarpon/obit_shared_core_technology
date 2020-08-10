@@ -72,7 +72,7 @@ DataModel.prototype.storeSampleTags = function (sampleTags, experiments, experim
     }
 
     // Reference to the correct map (per experiment type)
-    var sampleTagCodeMap;
+    let sampleTagCodeMap;
 
     // Filters div
     if (this.isMicroscopyExperiment(experimentType)) {
@@ -86,7 +86,7 @@ DataModel.prototype.storeSampleTags = function (sampleTags, experiments, experim
     }
 
     // Process all sample tags
-    for (var i = 0; i < sampleTags.length; i++) {
+    for (let i = 0; i < sampleTags.length; i++) {
 
         // If valid sample tag, store it and return it
         if (sampleTags[i]['@type'] &&
@@ -108,10 +108,10 @@ DataModel.prototype.storeSampleTags = function (sampleTags, experiments, experim
 DataModel.prototype.initDataStructure = function (projects) {
 
     // Go over all projects and rearrange them per space
-    for (var i = 0; i < projects.length; i++) {
+    for (let i = 0; i < projects.length; i++) {
 
         // Get the space code
-        var spaceCode = projects[i].spaceCode;
+        let spaceCode = projects[i].spaceCode;
 
         // Is the space already in the data array?
         if (!DATAMODEL.data.hasOwnProperty(spaceCode)) {
@@ -120,7 +120,7 @@ DataModel.prototype.initDataStructure = function (projects) {
 
         // Add the project object. We will populate it later on
         // demand with experiment information.
-        var project = {};
+        let project = {};
         project['project'] = projects[i];
         DATAMODEL.data[spaceCode].push(project);
     }
@@ -152,10 +152,10 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
             } else {
 
                 // Process all experiments in the collection in parallel
-                for (var i = 0; i < response.result.length; i++) {
+                for (let i = 0; i < response.result.length; i++) {
 
                     // Get current experiment
-                    var experiment = response.result[i];
+                    let experiment = response.result[i];
 
                     // Process them further by type
                     switch (experiment.code) {
@@ -356,7 +356,7 @@ DataModel.prototype.isFlowSorterExperiment = function (experimentType) {
 DataModel.prototype.getSamplesOfType = function (type, expID, action) {
 
     // Experiment criteria
-    var experimentCriteria = new SearchCriteria();
+    let experimentCriteria = new SearchCriteria();
     experimentCriteria.addMatchClause(
         SearchCriteriaMatchClause.createAttributeMatch("PERM_ID", expID)
     );
@@ -365,7 +365,7 @@ DataModel.prototype.getSamplesOfType = function (type, expID, action) {
     );
 
     // Sample (type) criteria
-    var sampleCriteria = new SearchCriteria();
+    let sampleCriteria = new SearchCriteria();
     sampleCriteria.addMatchClause(
         SearchCriteriaMatchClause.createAttributeMatch("TYPE", type)
     );
@@ -391,17 +391,17 @@ DataModel.prototype.updatePointersToSampleTags = function (response) {
     }
 
     // Instantiate a map
-    var pointerToObjectsMap = {};
+    let pointerToObjectsMap = {};
 
-    for (var i = 0; i < response.result.length; i++) {
+    for (let i = 0; i < response.result.length; i++) {
 
         // Get tags
-        var tags = response.result[i].parents;
+        let tags = response.result[i].parents;
 
         // Process them
-        for (var j = 0; j < tags.length; j++) {
+        for (let j = 0; j < tags.length; j++) {
 
-            var tag = tags[j];
+            let tag = tags[j];
 
             // Check the type of the retrieved object
             if (typeof(tag) === "number") {
@@ -418,7 +418,7 @@ DataModel.prototype.updatePointersToSampleTags = function (response) {
                 // We have an actual (sample) object
 
                 // Get the ID
-                var id = tag["@id"]
+                let id = tag["@id"]
 
                 // Store it in the map if it is not already there
                 if (!(id in pointerToObjectsMap)) {
