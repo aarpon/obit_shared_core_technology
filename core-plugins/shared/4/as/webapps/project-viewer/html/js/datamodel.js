@@ -171,6 +171,9 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                         // We ignore it.
                                     } else {
 
+                                        // Update the pointers to sample tags
+                                        DATAMODEL.updatePointersToSampleTags(response);
+
                                         project["experiments"]["MICROSCOPY"] = response.result;
                                         DATAVIEWER.displayExperiments(project, "MICROSCOPY");
 
@@ -191,6 +194,9 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                         // We ignore it.
                                     } else {
 
+                                        // Update the pointers to sample tags
+                                        DATAMODEL.updatePointersToSampleTags(response);
+
                                         project["experiments"]["LSR_FORTESSA"] = response.result;
                                         DATAVIEWER.displayExperiments(project, "LSR_FORTESSA");
 
@@ -210,6 +216,9 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                         // We ignore it.
                                     } else {
 
+                                        // Update the pointers to sample tags
+                                        DATAMODEL.updatePointersToSampleTags(response);
+
                                         project["experiments"]["FACS_ARIA"] = response.result;
                                         DATAVIEWER.displayExperiments(project, "FACS_ARIA");
 
@@ -224,6 +233,9 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                         // The experiment type INFLUX_EXPERIMENT is not registered.
                                         // We ignore it.
                                     } else {
+
+                                        // Update the pointers to sample tags
+                                        DATAMODEL.updatePointersToSampleTags(response);
 
                                         project["experiments"]["INFLUX"] = response.result;
                                         DATAVIEWER.displayExperiments(project, "INFLUX");
@@ -240,6 +252,9 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                         // We ignore it.
                                     } else {
 
+                                        // Update the pointers to sample tags
+                                        DATAMODEL.updatePointersToSampleTags(response);
+
                                         project["experiments"]["S3E"] = response.result;
                                         DATAVIEWER.displayExperiments(project, "S3E");
 
@@ -254,6 +269,9 @@ DataModel.prototype.retrieveExperimentDataForProject = function (project) {
                                         // The experiment type INFLUX_EXPERIMENT is not registered.
                                         // We ignore it.
                                     } else {
+
+                                        // Update the pointers to sample tags
+                                        DATAMODEL.updatePointersToSampleTags(response);
 
                                         project["experiments"]["MOFLO_XDP"] = response.result;
                                         DATAVIEWER.displayExperiments(project, "MOFLO_XDP");
@@ -358,5 +376,56 @@ DataModel.prototype.getSamplesOfType = function (type, expID, action) {
     // Search
     this.openbisServer.searchForSamplesWithFetchOptions(sampleCriteria,
         ["PARENTS", "PROPERTIES"], action);
+
+};
+
+/**
+ * Replace integer pointers to Sample Tags with the actual objects in the response.
+ * @param {object} response openBIS response object.
+ * @returns {object} Updated response object.
+ */
+DataModel.prototype.updatePointersToSampleTags = function (response) {
+
+    if (! ("result" in response)) {
+        return;
+    }
+
+    // Instantiate a map
+    var pointerToObjectsMap = {};
+
+    for (var i = 0; i < response.result.length; i++) {
+
+        // Get tags
+        var tags = response.result[i].parents;
+
+        // Process them
+        for (var j = 0; j < tags.length; j++) {
+
+            var tag = tags[j];
+
+            // Check the type of the retrieved object
+            if (typeof(tag) === "number") {
+
+                // We have a "pointer"
+
+                // Try retrieving the object from the map
+                if (tag in pointerToObjectsMap) {
+                    tags[j] = pointerToObjectsMap[tag];
+                }
+
+            } else {
+
+                // We have an actual (sample) object
+
+                // Get the ID
+                var id = tag["@id"]
+
+                // Store it in the map if it is not already there
+                if (!(id in pointerToObjectsMap)) {
+                    pointerToObjectsMap[id] = tag;
+                }
+            }
+        }
+    }
 
 };
