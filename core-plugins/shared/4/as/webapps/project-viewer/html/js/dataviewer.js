@@ -499,6 +499,14 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             var q = $("<div>").addClass("experiment_description").html(d);
             experimentContainerDiv.append(q);
 
+            // Add experiment registration date
+            var reg_date = $("<div>").addClass("experiment_registration_date").html(
+                "Registered on " +
+                (new Date(requested_experiments[i]["registrationDetails"]["registrationDate"])).toDateString() +
+                "."
+            );
+            experimentContainerDiv.append(reg_date);
+
             // Hostname friendly name
             var fS;
             if (f === "") {
