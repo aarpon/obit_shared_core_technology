@@ -281,7 +281,7 @@ DataViewer.prototype.prepareDisplayExperiments = function(project) {
         this.displayExperiments(project, "S3E");
         this.displayExperiments(project, "MOFLO_XDP");
         this.displayExperiments(project, "SONY_MA900");
-        this.displayExperiments(project, "SONZ_SH800S");
+        this.displayExperiments(project, "SONY_SH800S");
         this.displayExperiments(project, "CYTOFLEX_S");
         this.displayExperiments(project, "MICROSCOPY");
     }
@@ -311,7 +311,7 @@ DataViewer.prototype.reDisplayAllExperimentsForProject = function(project) {
     this.displayExperiments(project, "S3E");
     this.displayExperiments(project, "MOFLO_XDP");
     this.displayExperiments(project, "SONY_MA900");
-    this.displayExperiments(project, "SONZ_SH800S");
+    this.displayExperiments(project, "SONY_SH800S");
     this.displayExperiments(project, "CYTOFLEX_S");
     this.displayExperiments(project, "MICROSCOPY");
 
