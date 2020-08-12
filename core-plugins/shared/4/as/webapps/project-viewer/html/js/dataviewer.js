@@ -393,6 +393,7 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
     var requested_exp_property_name = "NAME";
     var requested_exp_descr_property_name = experimentType + "_EXPERIMENT_DESCRIPTION";
     var requested_exp_descr_property_hostname = experimentType + "_EXPERIMENT_ACQ_HARDWARE_FRIENDLY_NAME";
+    var requested_exp_property_date = experimentType + "_EXPERIMENT_DATE";
 
     // Sorting
     var requested_sorting_option = $('input[name=sort_option]:checked', '#exp_sorting_form').val();
@@ -499,6 +500,22 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
             var q = $("<div>").addClass("experiment_description").html(d);
             experimentContainerDiv.append(q);
 
+            // Acquisition date
+            var acqDate = new Date(requested_experiments[i]["properties"][requested_exp_property_date])
+            var acqDateStr = "";
+            if (acqDate instanceof Date && !isNaN(acqDate)) {
+                acqDateStr = " on " + acqDate.toDateString() + ".";
+            }
+
+            // Hostname friendly name
+            var fS;
+            if (f === "") {
+                f = "Unknown";
+            }
+            fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>" + acqDateStr;
+            var fN = $("<div>").addClass("experiment_hostname").html(fS);
+            experimentContainerDiv.append(fN);
+
             // Add experiment registration date
             var reg_date = $("<div>").addClass("experiment_registration_date").html(
                 "Registered on " +
@@ -506,15 +523,6 @@ DataViewer.prototype.displayExperiments = function(project, experimentType) {
                 "."
             );
             experimentContainerDiv.append(reg_date);
-
-            // Hostname friendly name
-            var fS;
-            if (f === "") {
-                f = "Unknown";
-            }
-            fS = "Acquired on <span class=\"label label-success machineName\">" + f + "</span>";
-            var fN = $("<div>").addClass("experiment_hostname").html(fS);
-            experimentContainerDiv.append(fN);
         }
 
         // Show the panel group
